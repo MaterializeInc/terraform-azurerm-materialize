@@ -49,11 +49,11 @@ variable "aks_config" {
 variable "database_config" {
   description = "Azure Database for PostgreSQL configuration"
   type = object({
-    sku_name = optional(string, "GP_Standard_D2s_v3")
-    version  = optional(string, "15")
-    password = string
-    username = optional(string, "materialize")
-    db_name  = optional(string, "materialize")
+    sku_name         = optional(string, "GP_Standard_D2s_v3")
+    postgres_version = optional(string, "15")
+    password         = string
+    username         = optional(string, "materialize")
+    db_name          = optional(string, "materialize")
   })
 
   validation {

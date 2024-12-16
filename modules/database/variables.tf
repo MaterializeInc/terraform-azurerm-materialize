@@ -29,11 +29,11 @@ variable "sku_name" {
   type        = string
 }
 
-variable "version" {
+variable "postgres_version" {
   description = "The PostgreSQL version"
   type        = string
   validation {
-    condition     = can(regex("^[0-9]+$", var.version))
+    condition     = can(regex("^[0-9]+$", var.postgres_version))
     error_message = "Version must be a number (e.g., 15)"
   }
 }

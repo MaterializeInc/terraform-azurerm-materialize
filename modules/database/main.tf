@@ -35,7 +35,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   name                = "${var.prefix}-postgres"
   resource_group_name = var.resource_group_name
   location            = var.location
-  version             = var.version
+  version             = var.postgres_version
   delegated_subnet_id = azurerm_subnet.postgres.id
   private_dns_zone_id = azurerm_private_dns_zone.postgres.id
 
