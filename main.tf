@@ -35,7 +35,6 @@ module "database" {
   location            = var.location
   prefix              = var.prefix
   vnet_id             = module.aks.vnet_id
-  subnet_id           = module.aks.subnet_id
 
   sku_name         = var.database_config.sku_name
   postgres_version = var.database_config.postgres_version
