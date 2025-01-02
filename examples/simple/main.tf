@@ -1,4 +1,3 @@
-
 terraform {
   required_version = ">= 1.0"
 
@@ -11,6 +10,10 @@ terraform {
       source  = "hashicorp/azuread"
       version = ">= 2.45.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.1.0"
+    }
   }
 }
 
@@ -22,16 +25,22 @@ provider "azurerm" {
   }
 }
 
-provider "azuread" {}
+resource "random_password" "pass" {
+  length = 20
+}
 
 resource "azurerm_resource_group" "materialize" {
-  name     = "rg-${var.prefix}"
+  name     = "${var.prefix}-rg"
   location = var.location
   tags     = var.tags
 }
 
 module "materialize" {
-  source = "../.." # Update this path based on your directory structure
+  # Referencing the root module directory:
+  source = "../.."
+
+  # Alternatively, you can use the GitHub source URL:
+  # source = "github.com/MaterializeInc/terraform-azurerm-materialize?ref=v0.1.0"
 
   resource_group_name = azurerm_resource_group.materialize.name
   location            = var.location
@@ -40,7 +49,7 @@ module "materialize" {
   database_config = {
     sku_name = "GP_Standard_D2s_v3"
     version  = "15"
-    password = var.database_password
+    password = random_password.pass.result
   }
 
   tags = {
@@ -60,12 +69,6 @@ variable "location" {
   description = "Azure region"
   type        = string
   default     = "eastus2"
-}
-
-variable "database_password" {
-  description = "Password for PostgreSQL database user"
-  type        = string
-  sensitive   = true
 }
 
 variable "tags" {

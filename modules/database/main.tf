@@ -1,4 +1,3 @@
-
 resource "azurerm_subnet" "postgres" {
   name                 = "${var.prefix}-pg-subnet"
   resource_group_name  = var.resource_group_name
