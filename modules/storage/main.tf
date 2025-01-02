@@ -8,10 +8,10 @@ resource "azurerm_storage_account" "materialize" {
   account_kind             = "StorageV2"
   is_hns_enabled           = true
 
-  network_rules {
-    default_action = "Allow"
-    bypass         = ["AzureServices"]
-  }
+  # network_rules {
+  #   default_action = "Allow"
+  #   bypass         = ["AzureServices"]
+  # }
 
   tags = var.tags
 }

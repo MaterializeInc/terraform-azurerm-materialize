@@ -1,6 +1,6 @@
 
 resource "azurerm_subnet" "postgres" {
-  name                 = "${var.prefix}-postgres-subnet"
+  name                 = "${var.prefix}-pg-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = data.azurerm_virtual_network.vnet.name
   address_prefixes     = [cidrsubnet(data.azurerm_virtual_network.vnet.address_space[0], 4, 1)]
@@ -23,7 +23,7 @@ resource "azurerm_private_dns_zone" "postgres" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
-  name                  = "${var.prefix}-postgres-dns-link"
+  name                  = "${var.prefix}-pg-dns-link"
   private_dns_zone_name = azurerm_private_dns_zone.postgres.name
   resource_group_name   = var.resource_group_name
   virtual_network_id    = data.azurerm_virtual_network.vnet.id
@@ -32,7 +32,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 }
 
 resource "azurerm_postgresql_flexible_server" "postgres" {
-  name                = "${var.prefix}-postgres"
+  name                = "${var.prefix}-pg"
   resource_group_name = var.resource_group_name
   location            = var.location
   version             = var.postgres_version
