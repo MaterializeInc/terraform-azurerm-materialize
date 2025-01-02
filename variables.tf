@@ -7,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "The location where resources will be created"
   type        = string
-  default     = "eastus"
+  default     = "eastus2"
 }
 
 variable "prefix" {
@@ -21,10 +21,13 @@ variable "network_config" {
   type = object({
     vnet_address_space = string
     subnet_cidr        = string
+    service_cidr       = string
   })
   default = {
     vnet_address_space = "10.0.0.0/16"
     subnet_cidr        = "10.0.0.0/20"
+    service_cidr       = "10.1.0.0/16"
+    docker_bridge_cidr = "172.17.0.1/16"
   }
 }
 
@@ -60,12 +63,6 @@ variable "database_config" {
     condition     = var.database_config.password != null
     error_message = "database_config.password must be provided"
   }
-}
-
-variable "namespace" {
-  description = "Kubernetes namespace for Materialize"
-  type        = string
-  default     = "materialize"
 }
 
 variable "tags" {

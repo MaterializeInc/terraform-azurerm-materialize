@@ -11,7 +11,7 @@ output "database_name" {
 
 output "private_ip" {
   description = "The private IP address of the PostgreSQL server"
-  value       = azurerm_postgresql_flexible_server.postgres.private_dns_name
+  value       = azurerm_postgresql_flexible_server.postgres.fqdn
 }
 
 output "connection_url" {
@@ -20,7 +20,7 @@ output "connection_url" {
     "postgres://%s:%s@%s/%s?sslmode=verify-full",
     var.database_user,
     var.password,
-    azurerm_postgresql_flexible_server.postgres.private_dns_name,
+    azurerm_postgresql_flexible_server.postgres.fqdn,
     azurerm_postgresql_flexible_server_database.materialize.name
   )
   sensitive = true

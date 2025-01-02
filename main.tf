@@ -13,6 +13,7 @@ module "aks" {
   prefix              = var.prefix
   vnet_address_space  = var.network_config.vnet_address_space
   subnet_cidr         = var.network_config.subnet_cidr
+  service_cidr        = var.network_config.service_cidr
 
   node_count   = var.aks_config.node_count
   vm_size      = var.aks_config.vm_size
@@ -20,8 +21,7 @@ module "aks" {
   min_nodes    = var.aks_config.min_nodes
   max_nodes    = var.aks_config.max_nodes
 
-  namespace = var.namespace
-  tags      = local.common_labels
+  tags = local.common_labels
 }
 
 module "database" {
@@ -52,4 +52,6 @@ module "storage" {
   identity_principal_id = module.aks.workload_identity_principal_id
 
   tags = local.common_labels
+
+  depends_on = [module.aks]
 }

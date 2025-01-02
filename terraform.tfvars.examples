@@ -1,0 +1,30 @@
+# Resource Group Configuration
+resource_group_name = "your-rg-name"
+location           = "eastus2"
+prefix             = "materialize"
+
+# AKS Configuration
+aks_config = {
+  node_count   = 2
+  vm_size      = "Standard_D2s_v3"
+  disk_size_gb = 50
+  min_nodes    = 1
+  max_nodes    = 3
+}
+
+# Database Configuration
+database_config = {
+  sku_name         = "GP_Standard_D2s_v3"
+  postgres_version = "15"
+  password         = "your-strong-password-here" # At least 12 characters
+  username         = "materialize"
+  db_name          = "materialize"
+}
+
+# Resource Tags
+tags = {
+  environment = "production"
+  team        = "data-platform"
+  managed_by  = "terraform"
+  cost_center = "12345"
+}

@@ -37,18 +37,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "${var.prefix}-aks"
 
   default_node_pool {
-    name            = "default"
-    node_count      = var.node_count
-    vm_size         = var.vm_size
-    os_disk_size_gb = var.disk_size_gb
-    vnet_subnet_id  = azurerm_subnet.aks.id
-    min_count       = var.min_nodes
-    max_count       = var.max_nodes
-
-    tags = merge(var.tags, {
-      "materialize.cloud/disk" = "true"
-      "workload"               = "materialize-instance"
-    })
+    name                 = "default"
+    node_count           = var.node_count
+    vm_size              = var.vm_size
+    os_disk_size_gb      = var.disk_size_gb
+    vnet_subnet_id       = azurerm_subnet.aks.id
+    min_count            = var.min_nodes
+    max_count            = var.max_nodes
+    auto_scaling_enabled = true
   }
 
   identity {
@@ -60,9 +56,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   workload_identity_enabled = true
 
   network_profile {
-    network_plugin    = "azure"
-    network_policy    = "azure"
-    load_balancer_sku = "standard"
+    network_plugin = "azure"
+    network_policy = "azure"
+    service_cidr   = var.service_cidr
+    dns_service_ip = cidrhost(var.service_cidr, 10)
   }
 
   tags = var.tags

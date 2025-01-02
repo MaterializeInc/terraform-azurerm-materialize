@@ -24,6 +24,12 @@ variable "subnet_cidr" {
   type        = string
 }
 
+variable "service_cidr" {
+  description = "CIDR range for Kubernetes services"
+  type        = string
+  default     = "10.2.0.0/16"
+}
+
 variable "node_count" {
   description = "Number of nodes in the AKS cluster"
   type        = number
