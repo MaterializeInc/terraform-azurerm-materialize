@@ -5,7 +5,6 @@ prefix             = "materialize"
 
 # AKS Configuration
 aks_config = {
-  node_count   = 2
   vm_size      = "Standard_D2s_v3"
   disk_size_gb = 50
   min_nodes    = 1

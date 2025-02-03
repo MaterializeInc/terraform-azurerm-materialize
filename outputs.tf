@@ -62,3 +62,9 @@ output "connection_strings" {
   }
   sensitive = true
 }
+
+output "kube_config" {
+  description = "The kube_config for the AKS cluster"
+  value       = module.aks.kube_config_raw
+  sensitive   = true
+}

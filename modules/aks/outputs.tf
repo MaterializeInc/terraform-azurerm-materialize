@@ -39,3 +39,15 @@ output "workload_identity_principal_id" {
   description = "The principal ID of the workload identity"
   value       = azurerm_user_assigned_identity.workload_identity.principal_id
 }
+
+output "kube_config" {
+  description = "The kube_config for the AKS cluster"
+  value       = azurerm_kubernetes_cluster.aks.kube_config
+  sensitive   = true
+}
+
+output "kube_config_raw" {
+  description = "The kube_config for the AKS cluster"
+  value       = azurerm_kubernetes_cluster.aks.kube_config_raw
+  sensitive   = true
+}

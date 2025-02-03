@@ -15,7 +15,6 @@ module "aks" {
   subnet_cidr         = var.network_config.subnet_cidr
   service_cidr        = var.network_config.service_cidr
 
-  node_count   = var.aks_config.node_count
   vm_size      = var.aks_config.vm_size
   disk_size_gb = var.aks_config.disk_size_gb
   min_nodes    = var.aks_config.min_nodes
@@ -43,6 +42,7 @@ module "database" {
   tags = local.common_labels
 }
 
+// TODO we should be generating one storage container per materialize_instance
 module "storage" {
   source = "./modules/storage"
 
@@ -55,3 +55,79 @@ module "storage" {
 
   depends_on = [module.aks]
 }
+
+locals {
+  default_helm_values = {
+    operator = {
+      image = {
+        tag = var.orchestratord_version
+      }
+      cloudProvider = {
+        type   = "azure"
+        region = var.location
+      }
+    }
+  }
+
+  merged_helm_values = merge(local.default_helm_values, var.helm_values)
+
+  instances = [
+    for instance in var.materialize_instances : {
+      name                 = instance.name
+      namespace            = instance.namespace
+      database_name        = instance.database_name
+      environmentd_version = instance.environmentd_version
+
+      metadata_backend_url = format(
+        "postgres://%s@%s/%s?sslmode=require",
+        "${var.database_config.username}:${var.database_config.password}",
+        module.database.database_host,
+        coalesce(instance.database_name, instance.name)
+      )
+
+      // the endpoint by default ends in `/` we want to remove that
+      # persist_backend_url = substr(module.storage.primary_blob_endpoint, 0, length(module.storage.primary_blob_endpoint) - 1)
+      persist_backend_url = format(
+        "%s%s?%s",
+        module.storage.primary_blob_endpoint,
+        module.storage.container_name,
+        module.storage.primary_blob_sas_token
+      )
+
+      cpu_request      = instance.cpu_request
+      memory_request   = instance.memory_request
+      memory_limit     = instance.memory_limit
+      create_database  = instance.create_database
+      in_place_rollout = instance.in_place_rollout
+      request_rollout  = instance.request_rollout
+      force_rollout    = instance.force_rollout
+    }
+  ]
+}
+
+module "operator" {
+  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.1"
+
+  count = var.install_materialize_operator ? 1 : 0
+
+  depends_on = [
+    module.aks,
+    module.database,
+    module.storage
+  ]
+
+  namespace          = var.namespace
+  environment        = var.prefix
+  operator_version   = var.operator_version
+  operator_namespace = var.operator_namespace
+
+  helm_values = local.merged_helm_values
+  instances   = local.instances
+
+  providers = {
+    kubernetes = kubernetes
+    helm       = helm
+  }
+}
+
+

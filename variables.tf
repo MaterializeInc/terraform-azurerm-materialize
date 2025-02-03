@@ -1,3 +1,12 @@
+variable "namespace" {
+  description = "Namespace for all resources, usually the organization or project name"
+  type        = string
+  validation {
+    condition     = length(var.namespace) <= 18 && can(regex("^[a-z0-9-]+$", var.namespace))
+    error_message = "Namespace must be lowercase alphanumeric and hyphens only, max 18 characters"
+  }
+  default = "materialize"
+}
 
 variable "resource_group_name" {
   description = "The name of the resource group"
@@ -34,7 +43,6 @@ variable "network_config" {
 variable "aks_config" {
   description = "AKS cluster configuration"
   type = object({
-    node_count   = number
     vm_size      = string
     disk_size_gb = number
     min_nodes    = number
@@ -42,7 +50,7 @@ variable "aks_config" {
   })
   default = {
     node_count   = 3
-    vm_size      = "Standard_D2s_v3"
+    vm_size      = "Standard_D4s_v3"
     disk_size_gb = 100
     min_nodes    = 1
     max_nodes    = 5
@@ -70,3 +78,54 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# Materialize Helm Chart Variables
+variable "install_materialize_operator" {
+  description = "Whether to install the Materialize operator"
+  type        = bool
+  default     = true
+}
+
+variable "operator_version" {
+  description = "Version of the Materialize operator to install"
+  type        = string
+  default     = "v25.1.0"
+}
+
+variable "operator_namespace" {
+  description = "Namespace for the Materialize operator"
+  type        = string
+  default     = "materialize"
+}
+
+variable "orchestratord_version" {
+  description = "Version of the Materialize orchestrator to install"
+  type        = string
+  default     = "v0.130.1"
+}
+
+variable "helm_values" {
+  description = "Additional Helm values to merge with defaults"
+  type        = any
+  default     = {}
+}
+
+variable "materialize_instances" {
+  description = "Configuration for Materialize instances"
+  type = list(object({
+    name                 = string
+    namespace            = optional(string)
+    database_name        = string
+    environmentd_version = optional(string, "v0.130.1")
+    cpu_request          = optional(string, "1")
+    memory_request       = optional(string, "1Gi")
+    memory_limit         = optional(string, "1Gi")
+    create_database      = optional(bool, true)
+    in_place_rollout     = optional(bool, false)
+    request_rollout      = optional(string)
+    force_rollout        = optional(string)
+  }))
+  default = []
+}
+
+

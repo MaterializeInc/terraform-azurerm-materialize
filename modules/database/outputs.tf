@@ -1,4 +1,3 @@
-
 output "server_name" {
   description = "The name of the PostgreSQL server"
   value       = azurerm_postgresql_flexible_server.postgres.name
@@ -14,6 +13,11 @@ output "private_ip" {
   value       = azurerm_postgresql_flexible_server.postgres.fqdn
 }
 
+output "database_host" {
+  description = "The host fqdn of the database"
+  value       = azurerm_postgresql_flexible_server.postgres.fqdn
+}
+
 output "connection_url" {
   description = "The connection URL for the database"
   value = format(
@@ -25,3 +29,4 @@ output "connection_url" {
   )
   sensitive = true
 }
+

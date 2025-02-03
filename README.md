@@ -20,6 +20,13 @@ The module has been tested with:
 - PostgreSQL 15
 - Materialize Operator v0.1.0
 
+## Setup Notes:
+This module requires active azure credentials in your environment either setup through keys in the environment variable or through
+`az login` with azure's CLI.
+
+This module also runs an python script to generate Azure SAS tokens for the storage account. This requires python 3.12 or greater. Dependencies
+for the script can be found in the `requirements.txt` file.
+
 ## Requirements
 
 | Name | Version |

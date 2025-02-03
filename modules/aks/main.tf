@@ -37,14 +37,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "${var.prefix}-aks"
 
   default_node_pool {
-    name                 = "default"
-    node_count           = var.node_count
-    vm_size              = var.vm_size
-    os_disk_size_gb      = var.disk_size_gb
-    vnet_subnet_id       = azurerm_subnet.aks.id
-    min_count            = var.min_nodes
-    max_count            = var.max_nodes
-    auto_scaling_enabled = true
+    temporary_name_for_rotation = "default2"
+    name                        = "default"
+    vm_size                     = var.vm_size
+    os_disk_size_gb             = var.disk_size_gb
+    vnet_subnet_id              = azurerm_subnet.aks.id
+    min_count                   = var.min_nodes
+    max_count                   = var.max_nodes
+    auto_scaling_enabled        = true
 
     upgrade_settings {
       max_surge                     = "10%"

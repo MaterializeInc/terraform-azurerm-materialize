@@ -18,10 +18,18 @@ terraform {
 }
 
 provider "azurerm" {
+  # subscription_id = "XXXXXXXXXXXXXXXXXXX"
+
   features {
     resource_group {
       prevent_deletion_if_contains_resources = false
     }
+    key_vault {
+      purge_soft_delete_on_destroy    = true
+      recover_soft_deleted_key_vaults = false
+    }
+
+
   }
 }
 
@@ -40,11 +48,12 @@ module "materialize" {
   source = "../.."
 
   # Alternatively, you can use the GitHub source URL:
-  # source = "github.com/MaterializeInc/terraform-azurerm-materialize?ref=v0.1.0"
-
+  # source              = "github.com/MaterializeInc/terraform-azurerm-materialize?ref=v0.1.0"
   resource_group_name = azurerm_resource_group.materialize.name
   location            = var.location
   prefix              = var.prefix
+
+  materialize_instances = var.materialize_instances
 
   database_config = {
     sku_name = "GP_Standard_D2s_v3"
@@ -56,8 +65,11 @@ module "materialize" {
     environment = "dev"
     managed_by  = "terraform"
   }
-}
 
+  providers = {
+    azurerm = azurerm
+  }
+}
 
 variable "prefix" {
   description = "Prefix for all resources"
@@ -77,6 +89,39 @@ variable "tags" {
   default     = {}
 }
 
+variable "materialize_instances" {
+  description = "Configuration for Materialize instances"
+  type = list(object({
+    name                 = string
+    namespace            = optional(string)
+    database_name        = string
+    environmentd_version = optional(string, "v0.131.1")
+    cpu_request          = optional(string, "1")
+    memory_request       = optional(string, "1Gi")
+    memory_limit         = optional(string, "1Gi")
+    create_database      = optional(bool, true)
+    in_place_rollout     = optional(bool, false)
+    request_rollout      = optional(string)
+    force_rollout        = optional(string)
+  }))
+  default = []
+  # A initil value cannot be provided until the kubernetes cluster has
+  # deployed. hashicorp/terraform-provider-kubernetes#1775
+  # You can set a value for this after the initial terraform run succeeds.
+  # Example:
+  # [
+  #   {
+  #     name           = "demo"
+  #     namespace      = "materialize-demo"
+  #     database_name  = "demo_db"
+  #     cpu_request    = "2"
+  #     memory_request = "4Gi"
+  #     memory_limit   = "4Gi"
+  #   }
+  # ]
+}
+
+
 output "aks_cluster" {
   description = "AKS cluster details"
   value       = module.materialize.aks_cluster
@@ -86,5 +131,11 @@ output "aks_cluster" {
 output "connection_strings" {
   description = "Connection strings for Materialize"
   value       = module.materialize.connection_strings
+  sensitive   = true
+}
+
+output "kube_config" {
+  description = "The kube_config for the AKS cluster"
+  value       = module.materialize.kube_config
   sensitive   = true
 }
