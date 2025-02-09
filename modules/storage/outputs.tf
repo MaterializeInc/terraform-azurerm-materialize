@@ -18,3 +18,10 @@ output "primary_blob_endpoint" {
   description = "The primary blob endpoint"
   value       = azurerm_storage_account.materialize.primary_blob_endpoint
 }
+
+output "primary_blob_sas_token" {
+  description = "access key to the storage account"
+  value       = data.external.sas_token.result.sas_token
+  sensitive   = true
+}
+

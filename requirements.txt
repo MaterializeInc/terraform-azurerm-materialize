@@ -1,0 +1,4 @@
+azure-mgmt-storage==22.0.0
+azure-storage-blob==12.24.1
+azure-identity==1.19.0
+azure-keyvault==4.2.0

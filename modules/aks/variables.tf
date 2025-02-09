@@ -30,11 +30,6 @@ variable "service_cidr" {
   default     = "10.2.0.0/16"
 }
 
-variable "node_count" {
-  description = "Number of nodes in the AKS cluster"
-  type        = number
-}
-
 variable "vm_size" {
   description = "VM size for AKS nodes"
   type        = string
