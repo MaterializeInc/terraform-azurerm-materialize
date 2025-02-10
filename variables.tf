@@ -49,7 +49,6 @@ variable "aks_config" {
     max_nodes    = number
   })
   default = {
-    node_count   = 3
     vm_size      = "Standard_D4s_v3"
     disk_size_gb = 100
     min_nodes    = 1
@@ -127,5 +126,3 @@ variable "materialize_instances" {
   }))
   default = []
 }
-
-
