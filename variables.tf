@@ -49,7 +49,7 @@ variable "aks_config" {
     max_nodes    = number
   })
   default = {
-    vm_size      = "Standard_D4s_v3"
+    vm_size      = "Standard_D8s_v3"
     disk_size_gb = 100
     min_nodes    = 1
     max_nodes    = 5
