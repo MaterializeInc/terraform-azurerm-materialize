@@ -40,9 +40,15 @@ Before running the module, ensure you have the necessary Python dependencies ins
 1. Install Python 3.12+ if you haven't already.
 2. Install the required dependencies using `pip`:
 
-   ```sh
-   pip install -r requirements.txt
-   ```
+    ```sh
+    pip install -r requirements.txt
+    ```
+
+    Or alternatively, you can install the dependencies manually:
+
+    ```sh
+    pip install azure-identity azure-storage-blob azure-keyvault-secrets azure-mgmt-storage
+    ```
 
 If you are using a virtual environment, you can set it up as follows:
 
