@@ -25,6 +25,12 @@ This module requires active Azure credentials in your environment, either set up
 az login
 ```
 
+You also need to set an Azure subscription ID in the `subscription_id` variable or set the `ARM_SUBSCRIPTION_ID` environment variable, eg:
+
+```sh
+export ARM_SUBSCRIPTION_ID="your-subscription-id"
+```
+
 Additionally, this module runs a Python script to generate Azure SAS tokens for the storage account. This requires **Python 3.12 or greater**.
 
 ### Installing Dependencies
@@ -104,5 +110,16 @@ No resources.
 | <a name="output_database"></a> [database](#output\_database) | Azure Database for PostgreSQL details |
 | <a name="output_identities"></a> [identities](#output\_identities) | Managed Identity details |
 | <a name="output_kube_config"></a> [kube\_config](#output\_kube\_config) | The kube\_config for the AKS cluster |
+| <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
 | <a name="output_storage"></a> [storage](#output\_storage) | Azure Storage Account details |
+
+## Accessing the AKS cluster
+
+The AKS cluster can be accessed using the `kubectl` command-line tool. To authenticate with the cluster, run the following command:
+
+```sh
+az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -json aks_cluster | jq -r '.name')
+```
+
+This command retrieves the AKS cluster credentials and merges them into the `~/.kube/config` file. You can now interact with the AKS cluster using `kubectl`.
 <!-- END_TF_DOCS -->

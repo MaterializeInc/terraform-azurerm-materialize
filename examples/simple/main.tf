@@ -18,6 +18,7 @@ terraform {
 }
 
 provider "azurerm" {
+  # Set the Azure subscription ID here or use the ARM_SUBSCRIPTION_ID environment variable
   # subscription_id = "XXXXXXXXXXXXXXXXXXX"
 
   features {
@@ -28,7 +29,6 @@ provider "azurerm" {
       purge_soft_delete_on_destroy    = true
       recover_soft_deleted_key_vaults = false
     }
-
 
   }
 }
@@ -108,19 +108,19 @@ variable "materialize_instances" {
   # deployed. hashicorp/terraform-provider-kubernetes#1775
   # You can set a value for this after the initial terraform run succeeds.
   # Example:
-  # [
+  # default = [
   #   {
   #     name           = "demo"
   #     namespace      = "materialize-demo"
   #     database_name  = "demo_db"
-  #     cpu_request    = "2"
-  #     memory_request = "4Gi"
-  #     memory_limit   = "4Gi"
+  #     cpu_request    = "1"
+  #     memory_request = "2Gi"
+  #     memory_limit   = "2Gi"
   #   }
   # ]
 }
 
-
+# Output the Materialize instance details
 output "aks_cluster" {
   description = "AKS cluster details"
   value       = module.materialize.aks_cluster
@@ -137,4 +137,8 @@ output "kube_config" {
   description = "The kube_config for the AKS cluster"
   value       = module.materialize.kube_config
   sensitive   = true
+}
+
+output "resource_group_name" {
+  value = azurerm_resource_group.materialize.name
 }

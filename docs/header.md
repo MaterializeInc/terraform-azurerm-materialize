@@ -24,6 +24,12 @@ This module requires active Azure credentials in your environment, either set up
 az login
 ```
 
+You also need to set an Azure subscription ID in the `subscription_id` variable or set the `ARM_SUBSCRIPTION_ID` environment variable, eg:
+
+```sh
+export ARM_SUBSCRIPTION_ID="your-subscription-id"
+```
+
 Additionally, this module runs a Python script to generate Azure SAS tokens for the storage account. This requires **Python 3.12 or greater**.
 
 ### Installing Dependencies
