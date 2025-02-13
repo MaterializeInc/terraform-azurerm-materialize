@@ -44,7 +44,7 @@ No providers.
 |------|--------|---------|
 | <a name="module_aks"></a> [aks](#module\_aks) | ./modules/aks | n/a |
 | <a name="module_database"></a> [database](#module\_database) | ./modules/database | n/a |
-| <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.1 |
+| <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.4 |
 | <a name="module_storage"></a> [storage](#module\_storage) | ./modules/storage | n/a |
 
 ## Resources
