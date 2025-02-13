@@ -92,17 +92,16 @@ variable "tags" {
 variable "materialize_instances" {
   description = "Configuration for Materialize instances"
   type = list(object({
-    name                 = string
-    namespace            = optional(string)
-    database_name        = string
-    environmentd_version = optional(string, "v0.131.1")
-    cpu_request          = optional(string, "1")
-    memory_request       = optional(string, "1Gi")
-    memory_limit         = optional(string, "1Gi")
-    create_database      = optional(bool, true)
-    in_place_rollout     = optional(bool, false)
-    request_rollout      = optional(string)
-    force_rollout        = optional(string)
+    name             = string
+    namespace        = optional(string)
+    database_name    = string
+    cpu_request      = optional(string, "1")
+    memory_request   = optional(string, "1Gi")
+    memory_limit     = optional(string, "1Gi")
+    create_database  = optional(bool, true)
+    in_place_rollout = optional(bool, false)
+    request_rollout  = optional(string)
+    force_rollout    = optional(string)
   }))
   default = []
   # A initil value cannot be provided until the kubernetes cluster has
