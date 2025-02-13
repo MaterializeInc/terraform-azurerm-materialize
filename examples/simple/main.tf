@@ -34,7 +34,8 @@ provider "azurerm" {
 }
 
 resource "random_password" "pass" {
-  length = 20
+  length  = 20
+  special = false
 }
 
 resource "azurerm_resource_group" "materialize" {
