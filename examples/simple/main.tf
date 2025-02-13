@@ -111,12 +111,13 @@ variable "materialize_instances" {
   # Example:
   # default = [
   #   {
-  #     name           = "demo"
-  #     namespace      = "materialize-demo"
-  #     database_name  = "demo_db"
-  #     cpu_request    = "1"
-  #     memory_request = "2Gi"
-  #     memory_limit   = "2Gi"
+  #     name            = "demo"
+  #     namespace       = "materialize-demo"
+  #     database_name   = "demo_db"
+  #     cpu_request     = "1"
+  #     memory_request  = "2Gi"
+  #     memory_limit    = "2Gi"
+  #     create_database = true
   #   }
   # ]
 }
