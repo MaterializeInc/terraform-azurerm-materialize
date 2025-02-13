@@ -68,3 +68,7 @@ output "kube_config" {
   value       = module.aks.kube_config_raw
   sensitive   = true
 }
+
+output "resource_group_name" {
+  value = var.resource_group_name
+}

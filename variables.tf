@@ -49,7 +49,7 @@ variable "aks_config" {
     max_nodes    = number
   })
   default = {
-    vm_size      = "Standard_D4s_v3"
+    vm_size      = "Standard_D8s_v3"
     disk_size_gb = 100
     min_nodes    = 1
     max_nodes    = 5
@@ -100,7 +100,7 @@ variable "operator_namespace" {
 variable "orchestratord_version" {
   description = "Version of the Materialize orchestrator to install"
   type        = string
-  default     = "v0.130.1"
+  default     = "v0.130.3"
 }
 
 variable "helm_values" {
@@ -115,7 +115,7 @@ variable "materialize_instances" {
     name                 = string
     namespace            = optional(string)
     database_name        = string
-    environmentd_version = optional(string, "v0.130.1")
+    environmentd_version = optional(string, "v0.130.3")
     cpu_request          = optional(string, "1")
     memory_request       = optional(string, "1Gi")
     memory_limit         = optional(string, "1Gi")

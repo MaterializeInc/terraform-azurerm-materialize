@@ -18,6 +18,7 @@ terraform {
 }
 
 provider "azurerm" {
+  # Set the Azure subscription ID here or use the ARM_SUBSCRIPTION_ID environment variable
   # subscription_id = "XXXXXXXXXXXXXXXXXXX"
 
   features {
@@ -29,12 +30,12 @@ provider "azurerm" {
       recover_soft_deleted_key_vaults = false
     }
 
-
   }
 }
 
 resource "random_password" "pass" {
-  length = 20
+  length  = 20
+  special = false
 }
 
 resource "azurerm_resource_group" "materialize" {
@@ -92,36 +93,36 @@ variable "tags" {
 variable "materialize_instances" {
   description = "Configuration for Materialize instances"
   type = list(object({
-    name                 = string
-    namespace            = optional(string)
-    database_name        = string
-    environmentd_version = optional(string, "v0.131.1")
-    cpu_request          = optional(string, "1")
-    memory_request       = optional(string, "1Gi")
-    memory_limit         = optional(string, "1Gi")
-    create_database      = optional(bool, true)
-    in_place_rollout     = optional(bool, false)
-    request_rollout      = optional(string)
-    force_rollout        = optional(string)
+    name             = string
+    namespace        = optional(string)
+    database_name    = string
+    cpu_request      = optional(string, "1")
+    memory_request   = optional(string, "1Gi")
+    memory_limit     = optional(string, "1Gi")
+    create_database  = optional(bool, true)
+    in_place_rollout = optional(bool, false)
+    request_rollout  = optional(string)
+    force_rollout    = optional(string)
   }))
   default = []
   # A initil value cannot be provided until the kubernetes cluster has
   # deployed. hashicorp/terraform-provider-kubernetes#1775
   # You can set a value for this after the initial terraform run succeeds.
   # Example:
-  # [
+  # default = [
   #   {
-  #     name           = "demo"
-  #     namespace      = "materialize-demo"
-  #     database_name  = "demo_db"
-  #     cpu_request    = "2"
-  #     memory_request = "4Gi"
-  #     memory_limit   = "4Gi"
+  #     name            = "demo"
+  #     namespace       = "materialize-demo"
+  #     database_name   = "demo_db"
+  #     cpu_request     = "1"
+  #     memory_request  = "2Gi"
+  #     memory_limit    = "2Gi"
+  #     create_database = true
   #   }
   # ]
 }
 
-
+# Output the Materialize instance details
 output "aks_cluster" {
   description = "AKS cluster details"
   value       = module.materialize.aks_cluster
@@ -138,4 +139,8 @@ output "kube_config" {
   description = "The kube_config for the AKS cluster"
   value       = module.materialize.kube_config
   sensitive   = true
+}
+
+output "resource_group_name" {
+  value = azurerm_resource_group.materialize.name
 }

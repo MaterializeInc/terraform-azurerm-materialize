@@ -121,6 +121,9 @@ module "operator" {
   operator_version   = var.operator_version
   operator_namespace = var.operator_namespace
 
+  # The metrics server already exists in the AKS cluster
+  install_metrics_server = false
+
   helm_values = local.merged_helm_values
   instances   = local.instances
 
