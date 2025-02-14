@@ -106,7 +106,7 @@ locals {
 }
 
 module "operator" {
-  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.4"
+  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.5"
 
   count = var.install_materialize_operator ? 1 : 0
 
@@ -126,6 +126,10 @@ module "operator" {
 
   helm_values = local.merged_helm_values
   instances   = local.instances
+
+  // For development purposes, you can use a local Helm chart instead of fetching it from the Helm repository
+  use_local_chart = var.use_local_chart
+  helm_chart      = var.helm_chart
 
   providers = {
     kubernetes = kubernetes
