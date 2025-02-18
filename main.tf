@@ -67,6 +67,11 @@ locals {
         region = var.location
       }
     }
+    observability = {
+      podMetrics = {
+        enabled = true
+      }
+    }
   }
 
   merged_helm_values = merge(local.default_helm_values, var.helm_values)
