@@ -50,10 +50,14 @@ module "storage" {
   location              = var.location
   prefix                = var.prefix
   identity_principal_id = module.aks.workload_identity_principal_id
+  subnets               = [module.aks.subnet_id]
 
   tags = local.common_labels
 
-  depends_on = [module.aks]
+  # This seems to help us get through some timing 
+  # issues that required multiple deploys, but truly
+  # shouldn't be needed.
+  depends_on = [module.aks.subnet_id]
 }
 
 locals {
