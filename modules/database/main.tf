@@ -17,8 +17,12 @@ resource "azurerm_subnet" "postgres" {
   }
 }
 
+resource "random_id" "dns_zone_suffix" {
+  byte_length = 4
+}
+
 resource "azurerm_private_dns_zone" "postgres" {
-  name                = "materialize.postgres.database.azure.com"
+  name                = "materialize${random_id.dns_zone_suffix.hex}.postgres.database.azure.com"
   resource_group_name = var.resource_group_name
   tags                = var.tags
 }
