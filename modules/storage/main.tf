@@ -71,13 +71,11 @@ resource "azurerm_role_assignment" "storage_blob_contributor" {
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_key_vault" "sas_token_vault" {
-  name                = "${var.prefix}-sas-token-vault"
+  name                = "${var.prefix}-sas-tv"
   resource_group_name = var.resource_group_name
   location            = var.location
   sku_name            = "standard"
   tenant_id           = data.azurerm_client_config.this.tenant_id
-
-
 
   access_policy {
     tenant_id = data.azurerm_client_config.this.tenant_id
@@ -112,4 +110,3 @@ data "external" "sas_token" {
   }
 
 }
-
