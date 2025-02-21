@@ -46,11 +46,10 @@ locals {
   )
 
   persist_backend_url = format(
-    "azblob://%s/%s?account=%s&container=%s",
-    module.storage.storage_account_key,
+    "%s%s?%s",
+    module.storage.primary_blob_endpoint,
     module.storage.container_name,
-    module.storage.storage_account_name,
-    module.storage.container_name
+    module.storage.primary_blob_sas_token
   )
 }
 
