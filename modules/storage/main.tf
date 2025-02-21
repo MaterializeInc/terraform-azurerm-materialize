@@ -1,17 +1,21 @@
 
 resource "azurerm_storage_account" "materialize" {
-  name                     = replace("${var.prefix}storage${random_string.unique.result}", "-", "")
-  resource_group_name      = var.resource_group_name
-  location                 = var.location
-  account_tier             = "Standard"
+  name                = replace("${var.prefix}storage${random_string.unique.result}", "-", "")
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  # https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-block-blob-premium#premium-scenarios
+  account_tier             = "Premium"
   account_replication_type = "LRS"
-  account_kind             = "StorageV2"
-  is_hns_enabled           = true
+  account_kind             = "BlockBlobStorage"
 
-  # network_rules {
-  #   default_action = "Allow"
-  #   bypass         = ["AzureServices"]
-  # }
+  dynamic "network_rules" {
+    for_each = length(var.subnets) == 0 ? [] : ["not_used"]
+    content {
+      default_action             = "Allow"
+      bypass                     = ["AzureServices"]
+      virtual_network_subnet_ids = var.subnets
+    }
+  }
 
   tags = var.tags
 }
@@ -34,40 +38,6 @@ resource "azurerm_role_assignment" "storage_blob_contributor" {
   principal_id         = var.identity_principal_id
 }
 
-# # Generate a Storage Account SAS Tokenj
-# data "azurerm_storage_account_sas" "token" {
-#   connection_string = azurerm_storage_account.materialize.primary_connection_string
-#   https_only        = true
-
-#   resource_types {
-#     object    = true
-#     container = true
-#     service   = true
-#   } # "s" for service-level access, "o" for object
-
-#   services {
-#     blob  = true
-#     table = false
-#     queue = false
-#     file  = false
-#   }
-
-#   permissions {
-#     read    = true
-#     write   = true
-#     delete  = true
-#     list    = true
-#     add     = true
-#     create  = true
-#     update  = true
-#     process = true
-#     tag     = true
-#     filter  = true
-#   }
-
-#   start  = formatdate("YYYY-MM-DD'T'HH:mm:ss'Z'", timestamp())
-#   expiry = formatdate("YYYY-MM-DD'T'HH:mm:ss'Z'", timeadd(timestamp(), "8760h")) # 1 year validity
-# }
 data "azurerm_client_config" "this" {}
 
 resource "azurerm_key_vault" "sas_token_vault" {

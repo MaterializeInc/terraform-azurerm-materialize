@@ -23,3 +23,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "subnets" {
+  description = "the subnet of the vnet that should be able to access this storage account"
+  type        = list(string)
+  default     = []
+}
