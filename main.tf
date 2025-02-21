@@ -123,7 +123,7 @@ module "operator" {
 
   namespace          = var.namespace
   environment        = var.prefix
-  operator_version   = try(var.operator_version, null)
+  operator_version   = var.operator_version
   operator_namespace = var.operator_namespace
 
   # The metrics server already exists in the AKS cluster
