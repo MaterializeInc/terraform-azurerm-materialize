@@ -38,7 +38,7 @@ output "identities" {
 
 locals {
   metadata_backend_url = format(
-    "postgres://%s:%s@%s:5432/%s?sslmode=verify-full",
+    "postgres://%s:%s@%s:5432/%s?sslmode=require",
     var.database_config.username,
     var.database_config.password,
     module.database.private_ip,
