@@ -49,7 +49,8 @@ module "materialize" {
   source = "../.."
 
   # Alternatively, you can use the GitHub source URL:
-  # source              = "github.com/MaterializeInc/terraform-azurerm-materialize?ref=v0.1.0"
+  # source              = "github.com/MaterializeInc/terraform-azurerm-materialize?ref=v0.1.4"
+
   resource_group_name = azurerm_resource_group.materialize.name
   location            = var.location
   prefix              = var.prefix
@@ -90,8 +91,10 @@ variable "tags" {
   default     = {}
 }
 
+# This can only be populated after the initial Kubernetes cluster deployment
+# due to provider limitations (hashicorp/terraform-provider-kubernetes#1775)
 variable "materialize_instances" {
-  description = "Configuration for Materialize instances"
+  description = "List of Materialize instances to be created."
   type = list(object({
     name             = string
     namespace        = optional(string)
@@ -105,21 +108,6 @@ variable "materialize_instances" {
     force_rollout    = optional(string)
   }))
   default = []
-  # A initil value cannot be provided until the kubernetes cluster has
-  # deployed. hashicorp/terraform-provider-kubernetes#1775
-  # You can set a value for this after the initial terraform run succeeds.
-  # Example:
-  # default = [
-  #   {
-  #     name            = "demo"
-  #     namespace       = "materialize-demo"
-  #     database_name   = "demo_db"
-  #     cpu_request     = "1"
-  #     memory_request  = "2Gi"
-  #     memory_limit    = "2Gi"
-  #     create_database = true
-  #   }
-  # ]
 }
 
 # Output the Materialize instance details

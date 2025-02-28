@@ -21,7 +21,7 @@ output "database_host" {
 output "connection_url" {
   description = "The connection URL for the database"
   value = format(
-    "postgres://%s:%s@%s/%s?sslmode=verify-full",
+    "postgres://%s:%s@%s/%s?sslmode=require",
     var.database_user,
     var.password,
     azurerm_postgresql_flexible_server.postgres.fqdn,
@@ -29,4 +29,3 @@ output "connection_url" {
   )
   sensitive = true
 }
-
