@@ -1,6 +1,6 @@
 
 resource "azurerm_storage_account" "materialize" {
-  name                = replace("${var.prefix}storage${random_string.unique.result}", "-", "")
+  name                = replace("${var.prefix}stg${random_string.unique.result}", "-", "")
   resource_group_name = var.resource_group_name
   location            = var.location
   # https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-block-blob-premium#premium-scenarios
