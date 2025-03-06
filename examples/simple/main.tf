@@ -55,6 +55,9 @@ module "materialize" {
   location            = var.location
   prefix              = var.prefix
 
+  operator_version      = var.operator_version
+  orchestratord_version = var.orchestratord_version
+
   materialize_instances = var.materialize_instances
 
   database_config = {
@@ -83,6 +86,18 @@ variable "location" {
   description = "Azure region"
   type        = string
   default     = "eastus2"
+}
+
+variable "operator_version" {
+  description = "Version of the Materialize operator to install"
+  type        = string
+  default     = null
+}
+
+variable "orchestratord_version" {
+  description = "Version of the Materialize orchestrator to install"
+  type        = string
+  default     = "v0.130.4"
 }
 
 variable "tags" {
