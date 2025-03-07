@@ -55,6 +55,9 @@ module "materialize" {
   location            = var.location
   prefix              = var.prefix
 
+  operator_version      = var.operator_version
+  orchestratord_version = var.orchestratord_version
+
   materialize_instances = var.materialize_instances
 
   database_config = {
@@ -85,6 +88,18 @@ variable "location" {
   default     = "eastus2"
 }
 
+variable "operator_version" {
+  description = "Version of the Materialize operator to install"
+  type        = string
+  default     = null
+}
+
+variable "orchestratord_version" {
+  description = "Version of the Materialize orchestrator to install"
+  type        = string
+  default     = "v0.130.4"
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
@@ -96,16 +111,20 @@ variable "tags" {
 variable "materialize_instances" {
   description = "List of Materialize instances to be created."
   type = list(object({
-    name             = string
-    namespace        = optional(string)
-    database_name    = string
-    cpu_request      = optional(string, "1")
-    memory_request   = optional(string, "1Gi")
-    memory_limit     = optional(string, "1Gi")
-    create_database  = optional(bool, true)
-    in_place_rollout = optional(bool, false)
-    request_rollout  = optional(string)
-    force_rollout    = optional(string)
+    name                    = string
+    namespace               = optional(string)
+    database_name           = string
+    environmentd_version    = optional(string, "v0.130.4")
+    cpu_request             = optional(string, "1")
+    memory_request          = optional(string, "1Gi")
+    memory_limit            = optional(string, "1Gi")
+    create_database         = optional(bool, true)
+    in_place_rollout        = optional(bool, false)
+    request_rollout         = optional(string)
+    force_rollout           = optional(string)
+    balancer_memory_request = optional(string, "256Mi")
+    balancer_memory_limit   = optional(string, "256Mi")
+    balancer_cpu_request    = optional(string, "100m")
   }))
   default = []
 }
