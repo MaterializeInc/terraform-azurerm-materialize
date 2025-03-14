@@ -119,6 +119,7 @@ No resources.
 | <a name="output_database"></a> [database](#output\_database) | Azure Database for PostgreSQL details |
 | <a name="output_identities"></a> [identities](#output\_identities) | Managed Identity details |
 | <a name="output_kube_config"></a> [kube\_config](#output\_kube\_config) | The kube\_config for the AKS cluster |
+| <a name="output_kube_config_raw"></a> [kube\_config\_raw](#output\_kube\_config\_raw) | The kube\_config for the AKS cluster |
 | <a name="output_network"></a> [network](#output\_network) | Network details |
 | <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
 | <a name="output_storage"></a> [storage](#output\_storage) | Azure Storage Account details |

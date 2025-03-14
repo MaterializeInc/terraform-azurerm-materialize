@@ -14,6 +14,14 @@ terraform {
       source  = "hashicorp/random"
       version = ">= 3.1.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.0"
+    }
   }
 }
 
@@ -29,7 +37,22 @@ provider "azurerm" {
       purge_soft_delete_on_destroy    = true
       recover_soft_deleted_key_vaults = false
     }
+  }
+}
 
+provider "kubernetes" {
+  host                   = module.materialize.kube_config[0].host
+  client_certificate     = base64decode(module.materialize.kube_config[0].client_certificate)
+  client_key             = base64decode(module.materialize.kube_config[0].client_key)
+  cluster_ca_certificate = base64decode(module.materialize.kube_config[0].cluster_ca_certificate)
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = module.materialize.kube_config[0].host
+    client_certificate     = base64decode(module.materialize.kube_config[0].client_certificate)
+    client_key             = base64decode(module.materialize.kube_config[0].client_key)
+    cluster_ca_certificate = base64decode(module.materialize.kube_config[0].cluster_ca_certificate)
   }
 }
 
@@ -72,7 +95,9 @@ module "materialize" {
   }
 
   providers = {
-    azurerm = azurerm
+    azurerm    = azurerm
+    kubernetes = kubernetes
+    helm       = helm
   }
 }
 

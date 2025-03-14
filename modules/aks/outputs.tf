@@ -37,7 +37,7 @@ output "kube_config" {
 }
 
 output "kube_config_raw" {
-  description = "The kube_config for the AKS cluster"
+  description = "The raw kube_config for the AKS cluster"
   value       = azurerm_kubernetes_cluster.aks.kube_config_raw
   sensitive   = true
 }
