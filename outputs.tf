@@ -1,4 +1,3 @@
-
 output "aks_cluster" {
   description = "AKS cluster details"
   value = {
@@ -25,6 +24,16 @@ output "storage" {
     name           = module.storage.storage_account_name
     blob_endpoint  = module.storage.primary_blob_endpoint
     container_name = module.storage.container_name
+  }
+}
+
+output "network" {
+  description = "Network details"
+  value = {
+    vnet_id       = module.networking.vnet_id
+    vnet_name     = module.networking.vnet_name
+    aks_subnet_id = module.networking.aks_subnet_id
+    pg_subnet_id  = module.networking.postgres_subnet_id
   }
 }
 
