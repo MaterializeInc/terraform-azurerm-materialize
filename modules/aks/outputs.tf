@@ -15,16 +15,6 @@ output "cluster_location" {
   value       = azurerm_kubernetes_cluster.aks.location
 }
 
-output "vnet_id" {
-  description = "The ID of the VNet"
-  value       = azurerm_virtual_network.vnet.id
-}
-
-output "subnet_id" {
-  description = "The ID of the subnet"
-  value       = azurerm_subnet.aks.id
-}
-
 output "cluster_identity" {
   description = "The identity of the AKS cluster"
   value       = azurerm_user_assigned_identity.aks_identity.principal_id
