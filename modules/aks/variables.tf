@@ -1,4 +1,3 @@
-
 variable "resource_group_name" {
   description = "The name of the resource group"
   type        = string
@@ -14,13 +13,8 @@ variable "prefix" {
   type        = string
 }
 
-variable "vnet_address_space" {
-  description = "Address space for the VNet"
-  type        = string
-}
-
-variable "subnet_cidr" {
-  description = "CIDR range for the subnet"
+variable "subnet_id" {
+  description = "The ID of the subnet for AKS"
   type        = string
 }
 

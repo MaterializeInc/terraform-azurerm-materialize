@@ -1,4 +1,3 @@
-
 resource "azurerm_storage_account" "materialize" {
   name                = replace("${var.prefix}stg${random_string.unique.result}", "-", "")
   resource_group_name = var.resource_group_name
@@ -78,5 +77,4 @@ data "external" "sas_token" {
     sas_secret_name        = "sas-token"
     sas_expiry_secret_name = "sas-expiry"
   }
-
 }

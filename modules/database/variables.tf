@@ -13,8 +13,13 @@ variable "prefix" {
   type        = string
 }
 
-variable "vnet_id" {
-  description = "The ID of the virtual network"
+variable "subnet_id" {
+  description = "The ID of the subnet for PostgreSQL"
+  type        = string
+}
+
+variable "private_dns_zone_id" {
+  description = "The ID of the private DNS zone"
   type        = string
 }
 

@@ -5,14 +5,27 @@ locals {
   })
 }
 
-module "aks" {
-  source = "./modules/aks"
+module "networking" {
+  source = "./modules/networking"
 
   resource_group_name = var.resource_group_name
   location            = var.location
   prefix              = var.prefix
   vnet_address_space  = var.network_config.vnet_address_space
   subnet_cidr         = var.network_config.subnet_cidr
+
+  tags = local.common_labels
+}
+
+module "aks" {
+  source = "./modules/aks"
+
+  depends_on = [module.networking]
+
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  prefix              = var.prefix
+  subnet_id           = module.networking.aks_subnet_id
   service_cidr        = var.network_config.service_cidr
 
   vm_size      = var.aks_config.vm_size
@@ -26,14 +39,15 @@ module "aks" {
 module "database" {
   source = "./modules/database"
 
-  depends_on = [module.aks]
+  depends_on = [module.networking]
 
   database_name       = var.database_config.db_name
   database_user       = var.database_config.username
   resource_group_name = var.resource_group_name
   location            = var.location
   prefix              = var.prefix
-  vnet_id             = module.aks.vnet_id
+  subnet_id           = module.networking.postgres_subnet_id
+  private_dns_zone_id = module.networking.private_dns_zone_id
 
   sku_name         = var.database_config.sku_name
   postgres_version = var.database_config.postgres_version
@@ -46,18 +60,15 @@ module "database" {
 module "storage" {
   source = "./modules/storage"
 
+  depends_on = [module.aks, module.networking]
+
   resource_group_name   = var.resource_group_name
   location              = var.location
   prefix                = var.prefix
   identity_principal_id = module.aks.workload_identity_principal_id
-  subnets               = [module.aks.subnet_id]
+  subnets               = [module.networking.aks_subnet_id]
 
   tags = local.common_labels
-
-  # This seems to help us get through some timing 
-  # issues that required multiple deploys, but truly
-  # shouldn't be needed.
-  depends_on = [module.aks.subnet_id]
 }
 
 locals {
