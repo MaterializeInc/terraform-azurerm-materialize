@@ -8,11 +8,12 @@ locals {
 module "networking" {
   source = "./modules/networking"
 
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  prefix              = var.prefix
-  vnet_address_space  = var.network_config.vnet_address_space
-  subnet_cidr         = var.network_config.subnet_cidr
+  resource_group_name  = var.resource_group_name
+  location             = var.location
+  prefix               = var.prefix
+  vnet_address_space   = var.network_config.vnet_address_space
+  subnet_cidr          = var.network_config.subnet_cidr
+  postgres_subnet_cidr = var.network_config.postgres_subnet_cidr
 
   tags = local.common_labels
 }

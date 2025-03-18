@@ -23,6 +23,11 @@ variable "subnet_cidr" {
   type        = string
 }
 
+variable "postgres_subnet_cidr" {
+  description = "CIDR range for the PostgreSQL subnet"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
