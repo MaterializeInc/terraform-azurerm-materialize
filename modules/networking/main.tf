@@ -19,7 +19,7 @@ resource "azurerm_subnet" "postgres" {
   name                 = "${var.prefix}-pg-subnet"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = [cidrsubnet(var.vnet_address_space, 4, 1)]
+  address_prefixes     = [var.postgres_subnet_cidr]
 
   service_endpoints = ["Microsoft.Storage"]
 
