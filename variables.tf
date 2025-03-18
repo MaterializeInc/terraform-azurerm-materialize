@@ -23,6 +23,10 @@ variable "prefix" {
   description = "Prefix to be used for resource names"
   type        = string
   default     = "materialize"
+  validation {
+    condition     = length(var.prefix) >= 3 && length(var.prefix) <= 16 && can(regex("^[a-z0-9-]+$", var.prefix))
+    error_message = "Prefix must be between 3-16 characters, lowercase alphanumeric and hyphens only."
+  }
 }
 
 variable "network_config" {
