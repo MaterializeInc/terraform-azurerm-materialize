@@ -36,14 +36,8 @@ variable "network_config" {
     subnet_cidr          = string
     postgres_subnet_cidr = string
     service_cidr         = string
+    docker_bridge_cidr   = string
   })
-  default = {
-    vnet_address_space   = "10.0.0.0/16"
-    subnet_cidr          = "10.0.0.0/20"
-    postgres_subnet_cidr = "10.0.16.0/24"
-    service_cidr         = "10.1.0.0/16"
-    docker_bridge_cidr   = "172.17.0.1/16"
-  }
 }
 
 variable "aks_config" {
