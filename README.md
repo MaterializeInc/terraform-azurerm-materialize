@@ -10,7 +10,14 @@ This module sets up:
 - Required networking and security configurations
 - Managed identities with proper RBAC permissions
 
-> **Warning** This is provided on a best-effort basis and Materialize cannot offer support for this module.
+> [!WARNING]
+> This module is provided on a best-effort basis and Materialize cannot offer support for it.
+>
+> It is not guaranteed to be forward-compatible and may include breaking changes in future versions.
+>
+> The module is intended for demonstration and evaluation purposes only, not for production use.
+>
+> Instead, consider forking this repository as a starting point for building your own production infrastructure.
 
 The module has been tested with:
 - AKS version 1.28
