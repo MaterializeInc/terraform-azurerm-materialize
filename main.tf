@@ -88,9 +88,9 @@ module "certificates" {
 locals {
   default_helm_values = {
     operator = {
-      image = {
+      image = var.orchestratord_version == null ? {} : {
         tag = var.orchestratord_version
-      }
+      },
       cloudProvider = {
         type   = "azure"
         region = var.location
