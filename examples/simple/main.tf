@@ -81,6 +81,9 @@ module "materialize" {
   operator_version      = var.operator_version
   orchestratord_version = var.orchestratord_version
 
+  install_cert_manager           = var.install_cert_manager
+  use_self_signed_cluster_issuer = var.use_self_signed_cluster_issuer
+
   materialize_instances = var.materialize_instances
 
   database_config = {
@@ -160,6 +163,18 @@ variable "materialize_instances" {
     balancer_cpu_request    = optional(string, "100m")
   }))
   default = []
+}
+
+variable "install_cert_manager" {
+  description = "Whether to install cert-manager."
+  type        = bool
+  default     = false
+}
+
+variable "use_self_signed_cluster_issuer" {
+  description = "Whether to install and use a self-signed ClusterIssuer for TLS. Due to limitations in Terraform, this may not be enabled before the cert-manager CRDs are installed."
+  type        = bool
+  default     = false
 }
 
 # Output the Materialize instance details
