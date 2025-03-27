@@ -11,7 +11,7 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
   administrator_login    = var.database_user
   administrator_password = var.password
 
-  storage_mb = 32768
+  storage_mb = var.storage_mb
   sku_name   = var.sku_name
 
   backup_retention_days = 7
