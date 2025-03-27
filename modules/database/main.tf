@@ -16,6 +16,12 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
 
   backup_retention_days = 7
 
+  lifecycle {
+    ignore_changes = [
+      zone
+    ]
+  }
+
   tags = var.tags
 }
 
