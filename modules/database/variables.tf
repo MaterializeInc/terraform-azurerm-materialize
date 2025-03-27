@@ -60,3 +60,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "storage_mb" {
+  description = "The storage capacity in MB"
+  type        = number
+  default     = 32768
+}
