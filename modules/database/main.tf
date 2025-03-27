@@ -1,5 +1,5 @@
 resource "azurerm_postgresql_flexible_server" "postgres" {
-  name                = "${var.prefix}-pg"
+  name                = "${var.prefix}-${random_string.postgres_name_suffix.result}-pg"
   resource_group_name = var.resource_group_name
   location            = var.location
   version             = var.postgres_version
@@ -22,4 +22,10 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
 resource "azurerm_postgresql_flexible_server_database" "materialize" {
   name      = var.database_name
   server_id = azurerm_postgresql_flexible_server.postgres.id
+}
+
+resource "random_string" "postgres_name_suffix" {
+  length  = 4
+  special = false
+  upper   = false
 }
