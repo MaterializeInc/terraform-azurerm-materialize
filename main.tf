@@ -72,12 +72,27 @@ module "storage" {
   tags = local.common_labels
 }
 
+module "certificates" {
+  source = "./modules/certificates"
+
+  install_cert_manager           = var.install_cert_manager
+  cert_manager_install_timeout   = var.cert_manager_install_timeout
+  cert_manager_chart_version     = var.cert_manager_chart_version
+  use_self_signed_cluster_issuer = var.use_self_signed_cluster_issuer
+  cert_manager_namespace         = var.cert_manager_namespace
+  name_prefix                    = var.prefix
+
+  depends_on = [
+    module.aks,
+  ]
+}
+
 locals {
   default_helm_values = {
     operator = {
-      image = {
+      image = var.orchestratord_version == null ? {} : {
         tag = var.orchestratord_version
-      }
+      },
       cloudProvider = {
         type   = "azure"
         region = var.location
@@ -88,6 +103,34 @@ locals {
         enabled = true
       }
     }
+    tls = var.use_self_signed_cluster_issuer ? {
+      defaultCertificateSpecs = {
+        balancerdExternal = {
+          dnsNames = [
+            "balancerd",
+          ]
+          issuerRef = {
+            name = module.certificates.cluster_issuer_name
+            kind = "ClusterIssuer"
+          }
+        }
+        consoleExternal = {
+          dnsNames = [
+            "console",
+          ]
+          issuerRef = {
+            name = module.certificates.cluster_issuer_name
+            kind = "ClusterIssuer"
+          }
+        }
+        internal = {
+          issuerRef = {
+            name = module.certificates.cluster_issuer_name
+            kind = "ClusterIssuer"
+          }
+        }
+      }
+    } : {}
   }
 
   merged_helm_values = merge(local.default_helm_values, var.helm_values)
@@ -131,14 +174,15 @@ locals {
 }
 
 module "operator" {
-  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.8"
+  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.9"
 
   count = var.install_materialize_operator ? 1 : 0
 
   depends_on = [
     module.aks,
     module.database,
-    module.storage
+    module.storage,
+    module.certificates,
   ]
 
   namespace          = var.namespace
