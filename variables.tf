@@ -159,3 +159,15 @@ variable "cert_manager_namespace" {
   type        = string
   default     = "cert-manager"
 }
+
+variable "cert_manager_install_timeout" {
+  description = "Timeout for installing the cert-manager helm chart, in seconds."
+  type        = number
+  default     = 300
+}
+
+variable "cert_manager_chart_version" {
+  description = "Version of the cert-manager helm chart to install."
+  type        = string
+  default     = "v1.17.1"
+}
