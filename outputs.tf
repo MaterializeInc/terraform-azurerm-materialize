@@ -96,3 +96,18 @@ output "load_balancer_details" {
     }
   }
 }
+
+output "operator" {
+  description = "Materialize operator details"
+  value = var.install_materialize_operator ? {
+    namespace             = module.operator[0].operator_namespace
+    release_name          = module.operator[0].operator_release_name
+    release_status        = module.operator[0].operator_release_status
+    instances             = module.operator[0].materialize_instances
+    namespace             = module.operator[0].operator_namespace
+    release_name          = module.operator[0].operator_release_name
+    release_status        = module.operator[0].operator_release_status
+    instances             = module.operator[0].materialize_instances
+    instance_resource_ids = module.operator[0].materialize_instance_resource_ids
+  } : null
+}
