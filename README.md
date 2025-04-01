@@ -106,7 +106,7 @@ No resources.
 | <a name="input_database_config"></a> [database\_config](#input\_database\_config) | Azure Database for PostgreSQL configuration | <pre>object({<br/>    sku_name         = optional(string, "GP_Standard_D2s_v3")<br/>    postgres_version = optional(string, "15")<br/>    password         = string<br/>    username         = optional(string, "materialize")<br/>    db_name          = optional(string, "materialize")<br/>  })</pre> | n/a | yes |
 | <a name="input_helm_chart"></a> [helm\_chart](#input\_helm\_chart) | Chart name from repository or local path to chart. For local charts, set the path to the chart directory. | `string` | `"materialize-operator"` | no |
 | <a name="input_helm_values"></a> [helm\_values](#input\_helm\_values) | Additional Helm values to merge with defaults | `any` | `{}` | no |
-| <a name="input_install_cert_manager"></a> [install\_cert\_manager](#input\_install\_cert\_manager) | Whether to install cert-manager. | `bool` | `false` | no |
+| <a name="input_install_cert_manager"></a> [install\_cert\_manager](#input\_install\_cert\_manager) | Whether to install cert-manager. | `bool` | `true` | no |
 | <a name="input_install_materialize_operator"></a> [install\_materialize\_operator](#input\_install\_materialize\_operator) | Whether to install the Materialize operator | `bool` | `true` | no |
 | <a name="input_location"></a> [location](#input\_location) | The location where resources will be created | `string` | `"eastus2"` | no |
 | <a name="input_materialize_instances"></a> [materialize\_instances](#input\_materialize\_instances) | Configuration for Materialize instances | <pre>list(object({<br/>    name                    = string<br/>    namespace               = optional(string)<br/>    database_name           = string<br/>    environmentd_version    = optional(string)<br/>    cpu_request             = optional(string, "1")<br/>    memory_request          = optional(string, "1Gi")<br/>    memory_limit            = optional(string, "1Gi")<br/>    create_database         = optional(bool, true)<br/>    in_place_rollout        = optional(bool, false)<br/>    request_rollout         = optional(string)<br/>    force_rollout           = optional(string)<br/>    balancer_memory_request = optional(string, "256Mi")<br/>    balancer_memory_limit   = optional(string, "256Mi")<br/>    balancer_cpu_request    = optional(string, "100m")<br/>  }))</pre> | `[]` | no |
@@ -119,7 +119,7 @@ No resources.
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_use_local_chart"></a> [use\_local\_chart](#input\_use\_local\_chart) | Whether to use a local chart instead of one from a repository | `bool` | `false` | no |
-| <a name="input_use_self_signed_cluster_issuer"></a> [use\_self\_signed\_cluster\_issuer](#input\_use\_self\_signed\_cluster\_issuer) | Whether to install and use a self-signed ClusterIssuer for TLS. Due to limitations in Terraform, this may not be enabled before the cert-manager CRDs are installed. | `bool` | `false` | no |
+| <a name="input_use_self_signed_cluster_issuer"></a> [use\_self\_signed\_cluster\_issuer](#input\_use\_self\_signed\_cluster\_issuer) | Whether to install and use a self-signed ClusterIssuer for TLS. To work around limitations in Terraform, this will be treated as `false` if no materialize instances are defined. | `bool` | `true` | no |
 
 ## Outputs
 
@@ -155,15 +155,23 @@ Access to the web console is through the console pods on port 8080.
 
 #### TLS support
 
-For example purposes, optional TLS support is provided by using `cert-manager` and a self-signed `ClusterIssuer`.
+TLS support is provided by using `cert-manager` and a self-signed `ClusterIssuer`.
 
 More advanced TLS support using user-provided CAs or per-Materialize `Issuer`s are out of scope for this Terraform module. Please refer to the [cert-manager documentation](https://cert-manager.io/docs/configuration/) for detailed guidance on more advanced usage.
 
-###### To enable installation of `cert-manager` and configuration of the self-signed `ClusterIssuer`
-1. Set `install_cert_manager` to `true`.
-1. Run `terraform apply`.
-1. Set `use_self_signed_cluster_issuer` to `true`.
-1. Run `terraform apply`.
+## Upgrade Notes
 
-Due to limitations in Terraform, it cannot plan Kubernetes resources using CRDs that do not exist yet. We need to first install `cert-manager` in the first `terraform apply`, before defining any `ClusterIssuer` or `Certificate` resources which get created in the second `terraform apply`.
+#### v0.3.0
+
+We now install `cert-manager` and configure a self-signed `ClusterIssuer` by default.
+
+Due to limitations in Terraform, it cannot plan Kubernetes resources using CRDs that do not exist yet. We have worked around this for new users by only generating the certificate resources when creating Materialize instances that use them, which also cannot be created on the first run.
+
+For existing users upgrading Materialize instances not previously configured for TLS:
+1. Leave `install_cert_manager` at its default of `true`.
+2. Set `use_self_signed_cluster_issuer` to `false`.
+3. Run `terraform apply`. This will install cert-manager and its CRDs.
+4. Set `use_self_signed_cluster_issuer` back to `true` (the default).
+5. Update the `request_rollout` field of the Materialize instance.
+6. Run `terraform apply`. This will generate the certificates and configure your Materialize instance to use them.
 <!-- END_TF_DOCS -->
