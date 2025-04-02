@@ -5,6 +5,14 @@ resource "azurerm_user_assigned_identity" "aks_identity" {
   tags                = var.tags
 }
 
+data "azurerm_subscription" "current" {}
+
+resource "azurerm_role_assignment" "aks_network_contributer" {
+  scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Network/virtualNetworks/${var.vnet_name}/subnets/${var.subnet_name}"
+  role_definition_name = "Network Contributor"
+  principal_id         = resource.azurerm_user_assigned_identity.aks_identity.principal_id
+}
+
 resource "azurerm_user_assigned_identity" "workload_identity" {
   name                = "${var.prefix}-workload-identity"
   resource_group_name = var.resource_group_name
@@ -51,4 +59,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = var.tags
+
+  depends_on = [
+    resource.azurerm_role_assignment.aks_network_contributer,
+  ]
 }
