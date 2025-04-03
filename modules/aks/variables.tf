@@ -13,6 +13,16 @@ variable "prefix" {
   type        = string
 }
 
+variable "vnet_name" {
+  description = "The name of the virtual network."
+  type        = string
+}
+
+variable "subnet_name" {
+  description = "The name of the subnet for AKS"
+  type        = string
+}
+
 variable "subnet_id" {
   description = "The ID of the subnet for AKS"
   type        = string

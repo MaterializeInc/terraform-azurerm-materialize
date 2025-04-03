@@ -155,6 +155,8 @@ variable "materialize_instances" {
     memory_request          = optional(string, "1Gi")
     memory_limit            = optional(string, "1Gi")
     create_database         = optional(bool, true)
+    create_load_balancer    = optional(bool, true)
+    internal_load_balancer  = optional(bool, true)
     in_place_rollout        = optional(bool, false)
     request_rollout         = optional(string)
     force_rollout           = optional(string)
@@ -198,4 +200,9 @@ output "kube_config" {
 
 output "resource_group_name" {
   value = azurerm_resource_group.materialize.name
+}
+
+output "load_balancer_details" {
+  description = "Details of the Materialize instance load balancers."
+  value       = module.materialize.load_balancer_details
 }

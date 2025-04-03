@@ -87,6 +87,7 @@ No providers.
 | <a name="module_aks"></a> [aks](#module\_aks) | ./modules/aks | n/a |
 | <a name="module_certificates"></a> [certificates](#module\_certificates) | ./modules/certificates | n/a |
 | <a name="module_database"></a> [database](#module\_database) | ./modules/database | n/a |
+| <a name="module_load_balancers"></a> [load\_balancers](#module\_load\_balancers) | ./modules/load_balancers | n/a |
 | <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking | n/a |
 | <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.9 |
 | <a name="module_storage"></a> [storage](#module\_storage) | ./modules/storage | n/a |
@@ -109,7 +110,7 @@ No resources.
 | <a name="input_install_cert_manager"></a> [install\_cert\_manager](#input\_install\_cert\_manager) | Whether to install cert-manager. | `bool` | `true` | no |
 | <a name="input_install_materialize_operator"></a> [install\_materialize\_operator](#input\_install\_materialize\_operator) | Whether to install the Materialize operator | `bool` | `true` | no |
 | <a name="input_location"></a> [location](#input\_location) | The location where resources will be created | `string` | `"eastus2"` | no |
-| <a name="input_materialize_instances"></a> [materialize\_instances](#input\_materialize\_instances) | Configuration for Materialize instances | <pre>list(object({<br/>    name                    = string<br/>    namespace               = optional(string)<br/>    database_name           = string<br/>    environmentd_version    = optional(string)<br/>    cpu_request             = optional(string, "1")<br/>    memory_request          = optional(string, "1Gi")<br/>    memory_limit            = optional(string, "1Gi")<br/>    create_database         = optional(bool, true)<br/>    in_place_rollout        = optional(bool, false)<br/>    request_rollout         = optional(string)<br/>    force_rollout           = optional(string)<br/>    balancer_memory_request = optional(string, "256Mi")<br/>    balancer_memory_limit   = optional(string, "256Mi")<br/>    balancer_cpu_request    = optional(string, "100m")<br/>  }))</pre> | `[]` | no |
+| <a name="input_materialize_instances"></a> [materialize\_instances](#input\_materialize\_instances) | Configuration for Materialize instances | <pre>list(object({<br/>    name                    = string<br/>    namespace               = optional(string)<br/>    database_name           = string<br/>    environmentd_version    = optional(string)<br/>    cpu_request             = optional(string, "1")<br/>    memory_request          = optional(string, "1Gi")<br/>    memory_limit            = optional(string, "1Gi")<br/>    create_database         = optional(bool, true)<br/>    create_load_balancer    = optional(bool, true)<br/>    internal_load_balancer  = optional(bool, true)<br/>    in_place_rollout        = optional(bool, false)<br/>    request_rollout         = optional(string)<br/>    force_rollout           = optional(string)<br/>    balancer_memory_request = optional(string, "256Mi")<br/>    balancer_memory_limit   = optional(string, "256Mi")<br/>    balancer_cpu_request    = optional(string, "100m")<br/>  }))</pre> | `[]` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace for all resources, usually the organization or project name | `string` | `"materialize"` | no |
 | <a name="input_network_config"></a> [network\_config](#input\_network\_config) | Network configuration for the AKS cluster | <pre>object({<br/>    vnet_address_space   = string<br/>    subnet_cidr          = string<br/>    postgres_subnet_cidr = string<br/>    service_cidr         = string<br/>    docker_bridge_cidr   = string<br/>  })</pre> | n/a | yes |
 | <a name="input_operator_namespace"></a> [operator\_namespace](#input\_operator\_namespace) | Namespace for the Materialize operator | `string` | `"materialize"` | no |
@@ -131,6 +132,7 @@ No resources.
 | <a name="output_identities"></a> [identities](#output\_identities) | Managed Identity details |
 | <a name="output_kube_config"></a> [kube\_config](#output\_kube\_config) | The kube\_config for the AKS cluster |
 | <a name="output_kube_config_raw"></a> [kube\_config\_raw](#output\_kube\_config\_raw) | The kube\_config for the AKS cluster |
+| <a name="output_load_balancer_details"></a> [load\_balancer\_details](#output\_load\_balancer\_details) | Details of the Materialize instance load balancers. |
 | <a name="output_network"></a> [network](#output\_network) | Network details |
 | <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
 | <a name="output_storage"></a> [storage](#output\_storage) | Azure Storage Account details |
@@ -147,11 +149,14 @@ This command retrieves the AKS cluster credentials and merges them into the `~/.
 
 ## Connecting to Materialize instances
 
-Access to the database is through the balancerd pods on:
-* Port 6875 for SQL connections.
-* Port 6876 for HTTP(S) connections.
+By default, two `LoadBalancer` `Services` are created for each Materialize instance:
+1. One for balancerd, listening on:
+    1. Port 6875 for SQL connections to the database.
+    1. Port 6876 for HTTP(S) connections to the database.
+1. One for the web console, listening on:
+    1. Port 8080 for HTTP(S) connections.
 
-Access to the web console is through the console pods on port 8080.
+The IP addresses of these load balancers will be in the `terraform output` as `load_balancer_details`.
 
 #### TLS support
 

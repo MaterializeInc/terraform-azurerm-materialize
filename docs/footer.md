@@ -10,11 +10,14 @@ This command retrieves the AKS cluster credentials and merges them into the `~/.
 
 ## Connecting to Materialize instances
 
-Access to the database is through the balancerd pods on:
-* Port 6875 for SQL connections.
-* Port 6876 for HTTP(S) connections.
+By default, two `LoadBalancer` `Services` are created for each Materialize instance:
+1. One for balancerd, listening on:
+    1. Port 6875 for SQL connections to the database.
+    1. Port 6876 for HTTP(S) connections to the database.
+1. One for the web console, listening on:
+    1. Port 8080 for HTTP(S) connections.
 
-Access to the web console is through the console pods on port 8080.
+The IP addresses of these load balancers will be in the `terraform output` as `load_balancer_details`.
 
 #### TLS support
 
