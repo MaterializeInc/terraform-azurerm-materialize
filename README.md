@@ -89,7 +89,7 @@ No providers.
 | <a name="module_database"></a> [database](#module\_database) | ./modules/database | n/a |
 | <a name="module_load_balancers"></a> [load\_balancers](#module\_load\_balancers) | ./modules/load_balancers | n/a |
 | <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking | n/a |
-| <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.9 |
+| <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.10 |
 | <a name="module_storage"></a> [storage](#module\_storage) | ./modules/storage | n/a |
 
 ## Resources
@@ -134,6 +134,7 @@ No resources.
 | <a name="output_kube_config_raw"></a> [kube\_config\_raw](#output\_kube\_config\_raw) | The kube\_config for the AKS cluster |
 | <a name="output_load_balancer_details"></a> [load\_balancer\_details](#output\_load\_balancer\_details) | Details of the Materialize instance load balancers. |
 | <a name="output_network"></a> [network](#output\_network) | Network details |
+| <a name="output_operator"></a> [operator](#output\_operator) | Materialize operator details |
 | <a name="output_resource_group_name"></a> [resource\_group\_name](#output\_resource\_group\_name) | n/a |
 | <a name="output_storage"></a> [storage](#output\_storage) | Azure Storage Account details |
 
