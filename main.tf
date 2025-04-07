@@ -160,6 +160,8 @@ locals {
         module.storage.primary_blob_sas_token
       )
 
+      license_key = instance.license_key
+
       create_load_balancer   = instance.create_load_balancer
       internal_load_balancer = instance.internal_load_balancer
 
@@ -179,7 +181,7 @@ locals {
 }
 
 module "operator" {
-  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.10"
+  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.11"
 
   count = var.install_materialize_operator ? 1 : 0
 
