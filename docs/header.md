@@ -19,7 +19,7 @@ This module sets up:
 The module has been tested with:
 - AKS version 1.28
 - PostgreSQL 15
-- Materialize Operator v0.1.0
+- terraform-helm-materialize v0.1.12 (Materialize Operator v25.1.7)
 
 ## Setup Notes:
 
