@@ -64,3 +64,52 @@ pip install -r requirements.txt
 ```
 
 This will install the required Python packages in a virtual environment.
+
+## Disk Support for Materialize on Azure
+
+This module supports configuring disk support for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and `lgalloc` for volume management.
+
+### Recommended Azure VM Types with Local NVMe Disks
+
+Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 disk-to-RAM ratio**. The [Lsv3-series](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-series) virtual machines offer high-throughput local NVMe SSD storage and are ideal for performance-intensive workloads.
+
+| VM Size          | vCPUs | Memory  | NVMe Storage | Disk-to-RAM Ratio |
+|------------------|-------|---------|--------------|-------------------|
+| Standard_L8s_v3  | 8     | 64 GiB  | 1,900 GiB    | ~29:1             |
+| Standard_L16s_v3 | 16    | 128 GiB | 3,800 GiB    | ~29:1             |
+| Standard_L32s_v3 | 32    | 256 GiB | 7,600 GiB    | ~29:1             |
+
+> [!NOTE]
+> These VM types provide **ephemeral local NVMe SSD disks**. Data is lost when the VM is stopped or deleted, so they should only be used for **temporary or performance-critical data** managed by Materialize.
+
+### Enabling Disk Support on Azure
+
+When `enable_disk_support` is set to `true`, the module:
+
+1. Uses a bootstrap container to identify and configure available NVMe disks
+1. Sets up **OpenEBS** with `lvm-localpv` to manage the ephemeral disks
+1. Creates a StorageClass for Materialize
+
+Example configuration:
+
+```hcl
+enable_disk_support = true
+
+aks_config = {
+  node_count   = 2
+  vm_size      = "Standard_L8s_v3"
+  os_disk_size_gb = 100
+  min_nodes    = 2
+  max_nodes    = 4
+}
+
+disk_support_config = {
+  install_openebs = true
+  run_disk_setup_script = true
+  create_storage_class = true
+
+  openebs_version = "4.2.0"
+  openebs_namespace = "openebs"
+  storage_class_name = "openebs-lvm-instance-store-ext4"
+}
+```
