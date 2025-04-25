@@ -59,3 +59,34 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# Disk setup variables
+variable "enable_disk_setup" {
+  description = "Whether to enable the local NVMe SSD disks setup script"
+  type        = bool
+  default     = false
+}
+
+variable "install_openebs" {
+  description = "Whether to install OpenEBS for NVMe storage"
+  type        = bool
+  default     = false
+}
+
+variable "openebs_namespace" {
+  description = "Namespace for OpenEBS components"
+  type        = string
+  default     = "openebs"
+}
+
+variable "openebs_version" {
+  description = "Version of OpenEBS Helm chart to install"
+  type        = string
+  default     = "4.2.0"
+}
+
+variable "disk_setup_image" {
+  description = "Docker image for the disk setup script"
+  type        = string
+  default     = "materialize/ephemeral-storage-setup-image:v0.1.2"
+}
