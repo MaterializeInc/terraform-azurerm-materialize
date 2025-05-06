@@ -68,19 +68,23 @@ This will install the required Python packages in a virtual environment.
 
 ## Disk Support for Materialize on Azure
 
-This module supports configuring disk support for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and `lgalloc` for volume management.
+This module supports configuring disks for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and LVM for volume management.
 
 ### Recommended Azure VM Types with Local NVMe Disks
 
-Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 disk-to-RAM ratio**. The [Lsv3-series](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-series) virtual machines offer high-throughput local NVMe SSD storage and are ideal for performance-intensive workloads.
+Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 disk-to-RAM ratio**. The [Epdsv6-series](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/memory-optimized/epdsv6-series?tabs=sizebasic#sizes-in-series) virtual machines offer a balanced combination of **high memory, local NVMe storage**.
 
-| VM Size          | vCPUs | Memory  | NVMe Storage | Disk-to-RAM Ratio |
-|------------------|-------|---------|--------------|-------------------|
-| Standard\_L8s\_v3  | 8     | 64 GiB  | 1,900 GiB    | ~29:1             |
-| Standard\_L16s\_v3 | 16    | 128 GiB | 3,800 GiB    | ~29:1             |
-| Standard\_L32s\_v3 | 32    | 256 GiB | 7,600 GiB    | ~29:1             |
+#### Epdsv6-series
 
-> [!NOTE]
+| VM Size              | vCPUs | Memory  | Ephemeral Disk | Disk-to-RAM Ratio |
+| -------------------- | ----- | ------- | -------------- | ----------------- |
+| Standard\\_E2pds\\_v6  | 2     | 16 GiB  | 75 GiB         | \~4.7:1           |
+| Standard\\_E4pds\\_v6  | 4     | 32 GiB  | 150 GiB        | \~4.7:1           |
+| Standard\\_E8pds\\_v6  | 8     | 64 GiB  | 300 GiB        | \~4.7:1           |
+| Standard\\_E16pds\\_v6 | 16    | 128 GiB | 600 GiB        | \~4.7:1           |
+| Standard\\_E32pds\\_v6 | 32    | 256 GiB | 1,200 GiB      | \~4.7:1           |
+
+> \[!NOTE]
 > These VM types provide **ephemeral local NVMe SSD disks**. Data is lost when the VM is stopped or deleted, so they should only be used for **temporary or performance-critical data** managed by Materialize.
 
 ### Enabling Disk Support on Azure
@@ -149,13 +153,13 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aks_config"></a> [aks\_config](#input\_aks\_config) | AKS cluster configuration | <pre>object({<br/>    vm_size      = string<br/>    disk_size_gb = number<br/>    min_nodes    = number<br/>    max_nodes    = number<br/>  })</pre> | <pre>{<br/>  "disk_size_gb": 100,<br/>  "max_nodes": 5,<br/>  "min_nodes": 1,<br/>  "vm_size": "Standard_L8s_v3"<br/>}</pre> | no |
+| <a name="input_aks_config"></a> [aks\_config](#input\_aks\_config) | AKS cluster configuration | <pre>object({<br/>    vm_size      = string<br/>    disk_size_gb = number<br/>    min_nodes    = number<br/>    max_nodes    = number<br/>  })</pre> | <pre>{<br/>  "disk_size_gb": 100,<br/>  "max_nodes": 5,<br/>  "min_nodes": 1,<br/>  "vm_size": "Standard_E4pds_v6"<br/>}</pre> | no |
 | <a name="input_cert_manager_chart_version"></a> [cert\_manager\_chart\_version](#input\_cert\_manager\_chart\_version) | Version of the cert-manager helm chart to install. | `string` | `"v1.17.1"` | no |
 | <a name="input_cert_manager_install_timeout"></a> [cert\_manager\_install\_timeout](#input\_cert\_manager\_install\_timeout) | Timeout for installing the cert-manager helm chart, in seconds. | `number` | `300` | no |
 | <a name="input_cert_manager_namespace"></a> [cert\_manager\_namespace](#input\_cert\_manager\_namespace) | The name of the namespace in which cert-manager is or will be installed. | `string` | `"cert-manager"` | no |
 | <a name="input_database_config"></a> [database\_config](#input\_database\_config) | Azure Database for PostgreSQL configuration | <pre>object({<br/>    sku_name         = optional(string, "GP_Standard_D2s_v3")<br/>    postgres_version = optional(string, "15")<br/>    password         = string<br/>    username         = optional(string, "materialize")<br/>    db_name          = optional(string, "materialize")<br/>  })</pre> | n/a | yes |
 | <a name="input_disk_setup_image"></a> [disk\_setup\_image](#input\_disk\_setup\_image) | Docker image for the disk setup script | `string` | `"materialize/ephemeral-storage-setup-image:v0.1.2"` | no |
-| <a name="input_disk_support_config"></a> [disk\_support\_config](#input\_disk\_support\_config) | Advanced configuration for disk support (only used when enable\_disk\_support = true) | <pre>object({<br/>    install_openebs           = optional(bool, true)<br/>    run_disk_setup_script     = optional(bool, true)<br/>    create_storage_class      = optional(bool, true)<br/>    openebs_version           = optional(string, "4.2.0")<br/>    openebs_namespace         = optional(string, "openebs")<br/>    storage_class_name        = optional(string, "openebs-lvm-instance-store-ext4")<br/>    storage_class_provisioner = optional(string, "local.csi.openebs.io")<br/>    storage_class_parameters = optional(object({<br/>      storage  = optional(string, "lvm")<br/>      fsType   = optional(string, "ext4")<br/>      volgroup = optional(string, "instance-store-vg")<br/>    }), {})<br/>  })</pre> | `{}` | no |
+| <a name="input_disk_support_config"></a> [disk\_support\_config](#input\_disk\_support\_config) | Advanced configuration for disk support (only used when enable\_disk\_support = true) | <pre>object({<br/>    install_openebs       = optional(bool, true)<br/>    run_disk_setup_script = optional(bool, true)<br/>    create_storage_class  = optional(bool, true)<br/>    openebs_version       = optional(string, "4.2.0")<br/>    openebs_namespace     = optional(string, "openebs")<br/>    storage_class_name    = optional(string, "openebs-lvm-instance-store-ext4")<br/>  })</pre> | `{}` | no |
 | <a name="input_enable_disk_support"></a> [enable\_disk\_support](#input\_enable\_disk\_support) | Enable disk support for Materialize using OpenEBS and local SSDs. When enabled, this configures OpenEBS, runs the disk setup script, and creates appropriate storage classes. | `bool` | `true` | no |
 | <a name="input_helm_chart"></a> [helm\_chart](#input\_helm\_chart) | Chart name from repository or local path to chart. For local charts, set the path to the chart directory. | `string` | `"materialize-operator"` | no |
 | <a name="input_helm_values"></a> [helm\_values](#input\_helm\_values) | Additional Helm values to merge with defaults | `any` | `{}` | no |
