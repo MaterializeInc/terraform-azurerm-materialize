@@ -67,19 +67,23 @@ This will install the required Python packages in a virtual environment.
 
 ## Disk Support for Materialize on Azure
 
-This module supports configuring disk support for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and `lgalloc` for volume management.
+This module supports configuring disks for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and LVM for volume management.
 
 ### Recommended Azure VM Types with Local NVMe Disks
 
-Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 disk-to-RAM ratio**. The [Lsv3-series](https://learn.microsoft.com/en-us/azure/virtual-machines/lsv3-series) virtual machines offer high-throughput local NVMe SSD storage and are ideal for performance-intensive workloads.
+Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 disk-to-RAM ratio**. The [Epdsv6-series](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/memory-optimized/epdsv6-series?tabs=sizebasic#sizes-in-series) virtual machines offer a balanced combination of **high memory, local NVMe storage**.
 
-| VM Size          | vCPUs | Memory  | NVMe Storage | Disk-to-RAM Ratio |
-|------------------|-------|---------|--------------|-------------------|
-| Standard_L8s_v3  | 8     | 64 GiB  | 1,900 GiB    | ~29:1             |
-| Standard_L16s_v3 | 16    | 128 GiB | 3,800 GiB    | ~29:1             |
-| Standard_L32s_v3 | 32    | 256 GiB | 7,600 GiB    | ~29:1             |
+#### Epdsv6-series
 
-> [!NOTE]
+| VM Size              | vCPUs | Memory  | Ephemeral Disk | Disk-to-RAM Ratio |
+| -------------------- | ----- | ------- | -------------- | ----------------- |
+| Standard\_E2pds\_v6  | 2     | 16 GiB  | 75 GiB         | \~4.7:1           |
+| Standard\_E4pds\_v6  | 4     | 32 GiB  | 150 GiB        | \~4.7:1           |
+| Standard\_E8pds\_v6  | 8     | 64 GiB  | 300 GiB        | \~4.7:1           |
+| Standard\_E16pds\_v6 | 16    | 128 GiB | 600 GiB        | \~4.7:1           |
+| Standard\_E32pds\_v6 | 32    | 256 GiB | 1,200 GiB      | \~4.7:1           |
+
+> \[!NOTE]
 > These VM types provide **ephemeral local NVMe SSD disks**. Data is lost when the VM is stopped or deleted, so they should only be used for **temporary or performance-critical data** managed by Materialize.
 
 ### Enabling Disk Support on Azure
