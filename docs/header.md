@@ -77,13 +77,13 @@ Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 
 
 | VM Size              | vCPUs | Memory  | Ephemeral Disk | Disk-to-RAM Ratio |
 | -------------------- | ----- | ------- | -------------- | ----------------- |
-| Standard\_E2pds\_v6  | 2     | 16 GiB  | 75 GiB         | \~4.7:1           |
-| Standard\_E4pds\_v6  | 4     | 32 GiB  | 150 GiB        | \~4.7:1           |
-| Standard\_E8pds\_v6  | 8     | 64 GiB  | 300 GiB        | \~4.7:1           |
-| Standard\_E16pds\_v6 | 16    | 128 GiB | 600 GiB        | \~4.7:1           |
-| Standard\_E32pds\_v6 | 32    | 256 GiB | 1,200 GiB      | \~4.7:1           |
+| `Standard_E2pds_v6`  | 2     | 16 GiB  | 75 GiB         | ~4.7:1            |
+| `Standard_E4pds_v6`  | 4     | 32 GiB  | 150 GiB        | ~4.7:1            |
+| `Standard_E8pds_v6`  | 8     | 64 GiB  | 300 GiB        | ~4.7:1            |
+| `Standard_E16pds_v6` | 16    | 128 GiB | 600 GiB        | ~4.7:1            |
+| `Standard_E32pds_v6` | 32    | 256 GiB | 1,200 GiB      | ~4.7:1            |
 
-> \[!NOTE]
+> [!NOTE]
 > These VM types provide **ephemeral local NVMe SSD disks**. Data is lost when the VM is stopped or deleted, so they should only be used for **temporary or performance-critical data** managed by Materialize.
 
 ### Enabling Disk Support on Azure
@@ -101,7 +101,7 @@ enable_disk_support = true
 
 aks_config = {
   node_count   = 2
-  vm_size      = "Standard_L8s_v3"
+  vm_size      = "Standard_E4pds_v6"
   os_disk_size_gb = 100
   min_nodes    = 2
   max_nodes    = 4
