@@ -66,6 +66,31 @@ pip install -r requirements.txt
 
 This will install the required Python packages in a virtual environment.
 
+## Resource Group
+
+This module requires an existing Azure Resource Group. You can either:
+
+1. Create one with Terraform:
+
+  ```hcl
+  resource "azurerm_resource_group" "materialize" {
+    name     = "${var.prefix}-rg"
+    location = var.location
+  }
+  ```
+
+  Then pass it to the module:
+
+  ```hcl
+  resource_group_name = azurerm_resource_group.materialize.name
+  ```
+
+2. Use an existing one:
+
+  ```hcl
+  resource_group_name = "your-existing-rg"
+  ```
+
 ## Disk Support for Materialize on Azure
 
 This module supports configuring disks for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and LVM for volume management.
