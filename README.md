@@ -70,26 +70,29 @@ This will install the required Python packages in a virtual environment.
 
 This module requires an existing Azure Resource Group. You can either:
 
-1. Create one with Terraform:
+1. Create one with Terraform before running this module:
 
-  ```hcl
-  resource "azurerm_resource_group" "materialize" {
-    name     = "${var.prefix}-rg"
-    location = var.location
-  }
-  ```
+    ```hcl
+    resource "azurerm_resource_group" "materialize" {
+      name     = var.resource_group_name
+      location = var.location
+    }
+    ```
 
-  Then pass it to the module:
+    Then set the `resource_group_name` variable in your `terraform.tfvars` file:
 
-  ```hcl
-  resource_group_name = azurerm_resource_group.materialize.name
-  ```
+    ```hcl
+    resource_group_name = "your-desired-rg-name"
+    ```
 
-2. Use an existing one:
+2. Use an existing one by just setting the name in your `terraform.tfvars` file:
 
-  ```hcl
-  resource_group_name = "your-existing-rg"
-  ```
+    ```hcl
+    resource_group_name = "your-existing-rg"
+    ```
+
+> [!IMPORTANT]
+> This module does not create a resource group. You must create one separately and set the `resource_group_name` variable explicitly. Setting it in your `terraform.tfvars` file is recommended to avoid accidental overwrites or mismatches.
 
 ## Disk Support for Materialize on Azure
 
@@ -198,7 +201,7 @@ No resources.
 | <a name="input_operator_version"></a> [operator\_version](#input\_operator\_version) | Version of the Materialize operator to install | `string` | `null` | no |
 | <a name="input_orchestratord_version"></a> [orchestratord\_version](#input\_orchestratord\_version) | Version of the Materialize orchestrator to install | `string` | `null` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to be used for resource names | `string` | `"materialize"` | no |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group | `string` | n/a | yes |
+| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of an existing resource group to use | `string` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_use_local_chart"></a> [use\_local\_chart](#input\_use\_local\_chart) | Whether to use a local chart instead of one from a repository | `bool` | `false` | no |
 | <a name="input_use_self_signed_cluster_issuer"></a> [use\_self\_signed\_cluster\_issuer](#input\_use\_self\_signed\_cluster\_issuer) | Whether to install and use a self-signed ClusterIssuer for TLS. To work around limitations in Terraform, this will be treated as `false` if no materialize instances are defined. | `bool` | `true` | no |

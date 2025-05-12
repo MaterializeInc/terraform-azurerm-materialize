@@ -69,26 +69,29 @@ This will install the required Python packages in a virtual environment.
 
 This module requires an existing Azure Resource Group. You can either:
 
-1. Create one with Terraform:
+1. Create one with Terraform before running this module:
 
-  ```hcl
-  resource "azurerm_resource_group" "materialize" {
-    name     = "${var.prefix}-rg"
-    location = var.location
-  }
-  ```
+    ```hcl
+    resource "azurerm_resource_group" "materialize" {
+      name     = var.resource_group_name
+      location = var.location
+    }
+    ```
 
-  Then pass it to the module:
+    Then set the `resource_group_name` variable in your `terraform.tfvars` file:
 
-  ```hcl
-  resource_group_name = azurerm_resource_group.materialize.name
-  ```
+    ```hcl
+    resource_group_name = "your-desired-rg-name"
+    ```
 
-2. Use an existing one:
+2. Use an existing one by just setting the name in your `terraform.tfvars` file:
 
-  ```hcl
-  resource_group_name = "your-existing-rg"
-  ```
+    ```hcl
+    resource_group_name = "your-existing-rg"
+    ```
+
+> [!IMPORTANT]
+> This module does not create a resource group. You must create one separately and set the `resource_group_name` variable explicitly. Setting it in your `terraform.tfvars` file is recommended to avoid accidental overwrites or mismatches.
 
 ## Disk Support for Materialize on Azure
 
