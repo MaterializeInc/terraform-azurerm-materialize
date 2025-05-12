@@ -9,7 +9,7 @@ variable "namespace" {
 }
 
 variable "resource_group_name" {
-  description = "The name of the resource group"
+  description = "The name of an existing resource group to use"
   type        = string
 }
 
