@@ -90,9 +90,6 @@ This module requires an existing Azure Resource Group. You can either:
     resource_group_name = "your-existing-rg"
     ```
 
-> [!IMPORTANT]
-> This module does not create a resource group. You must create one separately and set the `resource_group_name` variable explicitly. Setting it in your `terraform.tfvars` file is recommended to avoid accidental overwrites or mismatches.
-
 ## Disk Support for Materialize on Azure
 
 This module supports configuring disks for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and LVM for volume management.
