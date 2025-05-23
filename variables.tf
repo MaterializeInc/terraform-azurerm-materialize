@@ -8,15 +8,10 @@ variable "namespace" {
   default = "materialize"
 }
 
-variable "resource_group_name" {
-  description = "The name of an existing resource group to use"
-  type        = string
-}
-
 variable "location" {
   description = "The location where resources will be created"
   type        = string
-  default     = "eastus2"
+  default     = "norwayeast"
 }
 
 variable "prefix" {
@@ -28,39 +23,11 @@ variable "prefix" {
     error_message = "Prefix must be between 3-16 characters, lowercase alphanumeric and hyphens only."
   }
 }
-
-variable "network_config" {
-  description = "Network configuration for the AKS cluster"
-  type = object({
-    vnet_address_space   = string
-    subnet_cidr          = string
-    postgres_subnet_cidr = string
-    service_cidr         = string
-    docker_bridge_cidr   = string
-  })
-}
-
-variable "aks_config" {
-  description = "AKS cluster configuration"
-  type = object({
-    vm_size      = string
-    disk_size_gb = number
-    min_nodes    = number
-    max_nodes    = number
-  })
-  default = {
-    vm_size      = "Standard_E4pds_v6"
-    disk_size_gb = 100
-    min_nodes    = 1
-    max_nodes    = 5
-  }
-}
-
 variable "database_config" {
   description = "Azure Database for PostgreSQL configuration"
   type = object({
-    sku_name         = optional(string, "GP_Standard_D2s_v3")
-    postgres_version = optional(string, "15")
+    postgres_version = optional(string, "13")
+    host             = string
     password         = string
     username         = optional(string, "materialize")
     db_name          = optional(string, "materialize")
@@ -72,10 +39,22 @@ variable "database_config" {
   }
 }
 
-variable "tags" {
-  description = "Tags to apply to all resources"
-  type        = map(string)
-  default     = {}
+variable "storage_config" {
+  description = "Azure Storage Account Blob Storage"
+  type = object({
+    primary_blob_endpoint  = string
+    container_name         = optional(string, "materialize")
+    primary_blob_sas_token = string
+  })
+
+  validation {
+    condition     = var.storage_config.primary_blob_endpoint != null
+    error_message = "storage_config.primary_blob_endpoint must be provided"
+  }
+  validation {
+    condition     = var.storage_config.primary_blob_sas_token != null
+    error_message = "storage_config.password must be provided"
+  }
 }
 
 # Materialize Helm Chart Variables
@@ -143,60 +122,4 @@ variable "materialize_instances" {
     license_key             = optional(string)
   }))
   default = []
-}
-
-variable "install_cert_manager" {
-  description = "Whether to install cert-manager."
-  type        = bool
-  default     = true
-}
-
-variable "use_self_signed_cluster_issuer" {
-  description = "Whether to install and use a self-signed ClusterIssuer for TLS. To work around limitations in Terraform, this will be treated as `false` if no materialize instances are defined."
-  type        = bool
-  default     = true
-}
-
-variable "cert_manager_namespace" {
-  description = "The name of the namespace in which cert-manager is or will be installed."
-  type        = string
-  default     = "cert-manager"
-}
-
-variable "cert_manager_install_timeout" {
-  description = "Timeout for installing the cert-manager helm chart, in seconds."
-  type        = number
-  default     = 300
-}
-
-variable "cert_manager_chart_version" {
-  description = "Version of the cert-manager helm chart to install."
-  type        = string
-  default     = "v1.17.1"
-}
-
-# Disk support configuration
-variable "enable_disk_support" {
-  description = "Enable disk support for Materialize using OpenEBS and local SSDs. When enabled, this configures OpenEBS, runs the disk setup script, and creates appropriate storage classes."
-  type        = bool
-  default     = true
-}
-
-variable "disk_support_config" {
-  description = "Advanced configuration for disk support (only used when enable_disk_support = true)"
-  type = object({
-    install_openebs       = optional(bool, true)
-    run_disk_setup_script = optional(bool, true)
-    create_storage_class  = optional(bool, true)
-    openebs_version       = optional(string, "4.2.0")
-    openebs_namespace     = optional(string, "openebs")
-    storage_class_name    = optional(string, "openebs-lvm-instance-store-ext4")
-  })
-  default = {}
-}
-
-variable "disk_setup_image" {
-  description = "Docker image for the disk setup script"
-  type        = string
-  default     = "materialize/ephemeral-storage-setup-image:v0.1.2"
 }

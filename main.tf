@@ -1,118 +1,4 @@
 locals {
-  common_labels = merge(var.tags, {
-    managed_by = "terraform"
-    module     = "materialize"
-  })
-
-  # Disk support configuration
-  disk_config = {
-    install_openebs           = var.enable_disk_support ? lookup(var.disk_support_config, "install_openebs", true) : false
-    run_disk_setup_script     = var.enable_disk_support ? lookup(var.disk_support_config, "run_disk_setup_script", true) : false
-    create_storage_class      = var.enable_disk_support ? lookup(var.disk_support_config, "create_storage_class", true) : false
-    openebs_version           = lookup(var.disk_support_config, "openebs_version", "4.2.0")
-    openebs_namespace         = lookup(var.disk_support_config, "openebs_namespace", "openebs")
-    storage_class_name        = lookup(var.disk_support_config, "storage_class_name", "openebs-lvm-instance-store-ext4")
-    storage_class_provisioner = "local.csi.openebs.io"
-    storage_class_parameters = {
-      storage  = "lvm"
-      fsType   = "ext4"
-      volgroup = "instance-store-vg"
-    }
-  }
-}
-
-module "networking" {
-  source = "./modules/networking"
-
-  resource_group_name  = var.resource_group_name
-  location             = var.location
-  prefix               = var.prefix
-  vnet_address_space   = var.network_config.vnet_address_space
-  subnet_cidr          = var.network_config.subnet_cidr
-  postgres_subnet_cidr = var.network_config.postgres_subnet_cidr
-
-  tags = local.common_labels
-}
-
-module "aks" {
-  source = "./modules/aks"
-
-  depends_on = [module.networking]
-
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  prefix              = var.prefix
-  vnet_name           = module.networking.vnet_name
-  subnet_name         = module.networking.aks_subnet_name
-  subnet_id           = module.networking.aks_subnet_id
-  service_cidr        = var.network_config.service_cidr
-
-  vm_size      = var.aks_config.vm_size
-  disk_size_gb = var.aks_config.disk_size_gb
-  min_nodes    = var.aks_config.min_nodes
-  max_nodes    = var.aks_config.max_nodes
-
-  # Disk support configuration
-  enable_disk_setup = local.disk_config.run_disk_setup_script
-  install_openebs   = local.disk_config.install_openebs
-  openebs_namespace = local.disk_config.openebs_namespace
-  openebs_version   = local.disk_config.openebs_version
-  disk_setup_image  = var.disk_setup_image
-
-  tags = local.common_labels
-}
-
-module "database" {
-  source = "./modules/database"
-
-  depends_on = [module.networking]
-
-  database_name       = var.database_config.db_name
-  database_user       = var.database_config.username
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  prefix              = var.prefix
-  subnet_id           = module.networking.postgres_subnet_id
-  private_dns_zone_id = module.networking.private_dns_zone_id
-
-  sku_name         = var.database_config.sku_name
-  postgres_version = var.database_config.postgres_version
-  password         = var.database_config.password
-
-  tags = local.common_labels
-}
-
-// TODO we should be generating one storage container per materialize_instance
-module "storage" {
-  source = "./modules/storage"
-
-  depends_on = [module.aks, module.networking]
-
-  resource_group_name   = var.resource_group_name
-  location              = var.location
-  prefix                = var.prefix
-  identity_principal_id = module.aks.workload_identity_principal_id
-  subnets               = [module.networking.aks_subnet_id]
-
-  tags = local.common_labels
-}
-
-module "certificates" {
-  source = "./modules/certificates"
-
-  install_cert_manager           = var.install_cert_manager
-  cert_manager_install_timeout   = var.cert_manager_install_timeout
-  cert_manager_chart_version     = var.cert_manager_chart_version
-  use_self_signed_cluster_issuer = var.use_self_signed_cluster_issuer && length(var.materialize_instances) > 0
-  cert_manager_namespace         = var.cert_manager_namespace
-  name_prefix                    = var.prefix
-
-  depends_on = [
-    module.aks,
-  ]
-}
-
-locals {
   default_helm_values = {
     operator = {
       image = var.orchestratord_version == null ? {} : {
@@ -128,42 +14,6 @@ locals {
         enabled = true
       }
     }
-    tls = (var.use_self_signed_cluster_issuer && length(var.materialize_instances) > 0) ? {
-      defaultCertificateSpecs = {
-        balancerdExternal = {
-          dnsNames = [
-            "balancerd",
-          ]
-          issuerRef = {
-            name = module.certificates.cluster_issuer_name
-            kind = "ClusterIssuer"
-          }
-        }
-        consoleExternal = {
-          dnsNames = [
-            "console",
-          ]
-          issuerRef = {
-            name = module.certificates.cluster_issuer_name
-            kind = "ClusterIssuer"
-          }
-        }
-        internal = {
-          issuerRef = {
-            name = module.certificates.cluster_issuer_name
-            kind = "ClusterIssuer"
-          }
-        }
-      }
-    } : {}
-    storage = var.enable_disk_support ? {
-      storageClass = {
-        create      = local.disk_config.create_storage_class
-        name        = local.disk_config.storage_class_name
-        provisioner = local.disk_config.storage_class_provisioner
-        parameters  = local.disk_config.storage_class_parameters
-      }
-    } : {}
   }
 
   merged_helm_values = merge(local.default_helm_values, var.helm_values)
@@ -178,17 +28,17 @@ locals {
       metadata_backend_url = format(
         "postgres://%s@%s/%s?sslmode=require",
         "${var.database_config.username}:${var.database_config.password}",
-        module.database.database_host,
-        coalesce(instance.database_name, instance.name)
+        var.database_config.host,
+        var.database_config.db_name
       )
 
       // the endpoint by default ends in `/` we want to remove that
       # persist_backend_url = substr(module.storage.primary_blob_endpoint, 0, length(module.storage.primary_blob_endpoint) - 1)
       persist_backend_url = format(
         "%s%s?%s",
-        module.storage.primary_blob_endpoint,
-        module.storage.container_name,
-        module.storage.primary_blob_sas_token
+        var.storage_config.primary_blob_endpoint,
+        var.storage_config.container_name,
+        var.storage_config.primary_blob_sas_token
       )
 
       license_key = instance.license_key
@@ -212,16 +62,9 @@ locals {
 }
 
 module "operator" {
-  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.14"
+  source = "../terraform-helm-materialize/."
 
   count = var.install_materialize_operator ? 1 : 0
-
-  depends_on = [
-    module.aks,
-    module.database,
-    module.storage,
-    module.certificates,
-  ]
 
   namespace          = var.namespace
   environment        = var.prefix
@@ -255,7 +98,6 @@ module "load_balancers" {
   internal      = each.value.internal_load_balancer
 
   depends_on = [
-    module.operator,
-    module.aks,
+    module.operator
   ]
 }
