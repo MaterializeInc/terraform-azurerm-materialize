@@ -148,21 +148,6 @@ disk_support_config = {
 
 The `materialize_instances` variable is a list of objects that define the configuration for each Materialize instance.
 
-### `environmentd_extra_env`
-
-Optional list of extra environment variables to pass to the `environmentd` container. This allows you to pass any additional configuration supported by Materialize.
-
-Each entry should be an object with `name` and `value` fields:
-
-```hcl
-environmentd_extra_env = [
-  {
-    name  = "MZ_LOG_FILTER"
-    value = "materialized::coord=debug"
-  }
-]
-```
-
 ### `environmentd_extra_args`
 
 Optional list of additional command-line arguments to pass to the `environmentd` container. This can be used to override default system parameters or enable specific features.
@@ -224,7 +209,7 @@ No resources.
 | <a name="input_install_cert_manager"></a> [install\_cert\_manager](#input\_install\_cert\_manager) | Whether to install cert-manager. | `bool` | `true` | no |
 | <a name="input_install_materialize_operator"></a> [install\_materialize\_operator](#input\_install\_materialize\_operator) | Whether to install the Materialize operator | `bool` | `true` | no |
 | <a name="input_location"></a> [location](#input\_location) | The location where resources will be created | `string` | `"eastus2"` | no |
-| <a name="input_materialize_instances"></a> [materialize\_instances](#input\_materialize\_instances) | Configuration for Materialize instances | <pre>list(object({<br/>    name                    = string<br/>    namespace               = optional(string)<br/>    database_name           = string<br/>    environmentd_version    = optional(string)<br/>    cpu_request             = optional(string, "1")<br/>    memory_request          = optional(string, "1Gi")<br/>    memory_limit            = optional(string, "1Gi")<br/>    create_database         = optional(bool, true)<br/>    create_load_balancer    = optional(bool, true)<br/>    internal_load_balancer  = optional(bool, true)<br/>    in_place_rollout        = optional(bool, false)<br/>    request_rollout         = optional(string)<br/>    force_rollout           = optional(string)<br/>    balancer_memory_request = optional(string, "256Mi")<br/>    balancer_memory_limit   = optional(string, "256Mi")<br/>    balancer_cpu_request    = optional(string, "100m")<br/>    license_key             = optional(string)<br/>    environmentd_extra_env = optional(list(object({<br/>      name  = string<br/>      value = string<br/>    })), [])<br/>    environmentd_extra_args = optional(list(string), [])<br/>  }))</pre> | `[]` | no |
+| <a name="input_materialize_instances"></a> [materialize\_instances](#input\_materialize\_instances) | Configuration for Materialize instances | <pre>list(object({<br/>    name                    = string<br/>    namespace               = optional(string)<br/>    database_name           = string<br/>    environmentd_version    = optional(string)<br/>    cpu_request             = optional(string, "1")<br/>    memory_request          = optional(string, "1Gi")<br/>    memory_limit            = optional(string, "1Gi")<br/>    create_database         = optional(bool, true)<br/>    create_load_balancer    = optional(bool, true)<br/>    internal_load_balancer  = optional(bool, true)<br/>    in_place_rollout        = optional(bool, false)<br/>    request_rollout         = optional(string)<br/>    force_rollout           = optional(string)<br/>    balancer_memory_request = optional(string, "256Mi")<br/>    balancer_memory_limit   = optional(string, "256Mi")<br/>    balancer_cpu_request    = optional(string, "100m")<br/>    license_key             = optional(string)<br/>    environmentd_extra_args = optional(list(string), [])<br/>  }))</pre> | `[]` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace for all resources, usually the organization or project name | `string` | `"materialize"` | no |
 | <a name="input_network_config"></a> [network\_config](#input\_network\_config) | Network configuration for the AKS cluster | <pre>object({<br/>    vnet_address_space   = string<br/>    subnet_cidr          = string<br/>    postgres_subnet_cidr = string<br/>    service_cidr         = string<br/>    docker_bridge_cidr   = string<br/>  })</pre> | n/a | yes |
 | <a name="input_operator_namespace"></a> [operator\_namespace](#input\_operator\_namespace) | Namespace for the Materialize operator | `string` | `"materialize"` | no |
