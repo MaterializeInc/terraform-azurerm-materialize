@@ -195,6 +195,8 @@ locals {
 
       license_key = instance.license_key
 
+      external_login_password_mz_system = instance.external_login_password_mz_system != null ? instance.external_login_password_mz_system : null
+
       create_load_balancer   = instance.create_load_balancer
       internal_load_balancer = instance.internal_load_balancer
 
