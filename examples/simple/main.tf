@@ -165,6 +165,7 @@ variable "materialize_instances" {
     balancer_cpu_request              = optional(string, "100m")
     license_key                       = optional(string)
     external_login_password_mz_system = optional(string, null)
+    authenticator_kind                = optional(string, "None")
     environmentd_extra_args           = optional(list(string), [])
   }))
   default = []
