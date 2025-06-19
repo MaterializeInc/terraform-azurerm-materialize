@@ -61,6 +61,11 @@ resource "random_password" "pass" {
   special = false
 }
 
+resource "random_password" "analytics_mz_system" {
+  length  = 20
+  special = true
+}
+
 resource "azurerm_resource_group" "materialize" {
   name     = "${var.prefix}-rg"
   location = var.location
@@ -147,24 +152,26 @@ variable "tags" {
 variable "materialize_instances" {
   description = "List of Materialize instances to be created."
   type = list(object({
-    name                    = string
-    namespace               = optional(string)
-    database_name           = string
-    environmentd_version    = optional(string)
-    cpu_request             = optional(string, "1")
-    memory_request          = optional(string, "1Gi")
-    memory_limit            = optional(string, "1Gi")
-    create_database         = optional(bool, true)
-    create_load_balancer    = optional(bool, true)
-    internal_load_balancer  = optional(bool, true)
-    in_place_rollout        = optional(bool, false)
-    request_rollout         = optional(string)
-    force_rollout           = optional(string)
-    balancer_memory_request = optional(string, "256Mi")
-    balancer_memory_limit   = optional(string, "256Mi")
-    balancer_cpu_request    = optional(string, "100m")
-    license_key             = optional(string)
-    environmentd_extra_args = optional(list(string), [])
+    name                              = string
+    namespace                         = optional(string)
+    database_name                     = string
+    environmentd_version              = optional(string)
+    cpu_request                       = optional(string, "1")
+    memory_request                    = optional(string, "1Gi")
+    memory_limit                      = optional(string, "1Gi")
+    create_database                   = optional(bool, true)
+    create_load_balancer              = optional(bool, true)
+    internal_load_balancer            = optional(bool, true)
+    in_place_rollout                  = optional(bool, false)
+    request_rollout                   = optional(string)
+    force_rollout                     = optional(string)
+    balancer_memory_request           = optional(string, "256Mi")
+    balancer_memory_limit             = optional(string, "256Mi")
+    balancer_cpu_request              = optional(string, "100m")
+    license_key                       = optional(string)
+    external_login_password_mz_system = optional(string, null)
+    authenticator_kind                = optional(string, "None")
+    environmentd_extra_args           = optional(list(string), [])
   }))
   default = []
 }
