@@ -61,6 +61,11 @@ resource "random_password" "pass" {
   special = false
 }
 
+resource "random_password" "analytics_mz_system" {
+  length  = 20
+  special = true
+}
+
 resource "azurerm_resource_group" "materialize" {
   name     = "${var.prefix}-rg"
   location = var.location
