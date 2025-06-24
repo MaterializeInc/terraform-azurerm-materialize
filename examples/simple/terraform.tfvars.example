@@ -2,13 +2,15 @@ prefix = "mz-dev"
 
 # materialize_instances = [
 #   {
-#     name                    = "analytics"
-#     namespace               = "materialize-environment"
-#     database_name           = "analytics_db"
-#     cpu_request             = "1"
-#     memory_request          = "1Gi"
-#     memory_limit            = "1Gi"
-#     create_database         = true
+#     name                              = "analytics"
+#     namespace                         = "materialize-environment"
+#     database_name                     = "analytics_db"
+#     cpu_request                       = "1"
+#     memory_request                    = "1Gi"
+#     memory_limit                      = "1Gi"
+#     create_database                   = true
+#     authenticator_kind                = "Password"
+#     external_login_password_mz_system = random_password.analytics_mz_system.result
 #   },
 #   {
 #     name                    = "demo"
