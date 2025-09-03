@@ -205,8 +205,14 @@ resource "kubernetes_daemonset" "disk_setup" {
         init_container {
           name    = "disk-setup"
           image   = var.disk_setup_image
-          command = ["/usr/local/bin/configure-disks.sh"]
-          args    = ["--cloud-provider", "azure"]
+          command = ["ephemeral-storage-setup"]
+          args = [
+            "lvm",
+            "--cloud-provider",
+            "azure",
+            # Taints can not be removed: https://github.com/Azure/AKS/issues/2934
+            #"--remove-taint",
+          ]
           resources {
             limits = {
               memory = "128Mi"
@@ -242,40 +248,11 @@ resource "kubernetes_daemonset" "disk_setup" {
           }
         }
 
-        # Taints can not be removed: https://github.com/Azure/AKS/issues/2934
-        # init_container {
-        #   name    = "taint-removal"
-        #   image   = var.disk_setup_image
-        #   command = ["/usr/local/bin/remove-taint.sh"]
-        #   resources {
-        #     limits = {
-        #       memory = "64Mi"
-        #     }
-        #     requests = {
-        #       memory = "64Mi"
-        #       cpu    = "10m"
-        #     }
-        #   }
-        #   security_context {
-        #     run_as_user = 0
-        #   }
-        #   env {
-        #     name = "NODE_NAME"
-        #     value_from {
-        #       field_ref {
-        #         field_path = "spec.nodeName"
-        #       }
-        #     }
-        #   }
-        #   env {
-        #     name  = "TAINT_KEY"
-        #     value = "materialize.cloud/disk-unconfigured"
-        #   }
-        # }
-
         container {
-          name  = "pause"
-          image = "mcr.microsoft.com/oss/kubernetes/pause:3.6"
+          name    = "pause"
+          image   = var.disk_setup_image
+          command = ["ephemeral-storage-setup"]
+          args    = ["sleep"]
           resources {
             limits = {
               memory = "8Mi"
@@ -329,7 +306,7 @@ resource "kubernetes_cluster_role" "disk_setup" {
   rule {
     api_groups = [""]
     resources  = ["nodes"]
-    verbs      = ["get", "patch"]
+    verbs      = ["get", "patch", "update"]
   }
 }
 
