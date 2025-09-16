@@ -122,6 +122,9 @@ locals {
         type   = "azure"
         region = var.location
       }
+      clusters = {
+        swap_enabled = false
+      }
     }
     observability = {
       podMetrics = {

@@ -79,6 +79,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "materialize" {
 
   node_labels = {
     "materialize.cloud/disk"                 = var.enable_disk_setup ? "true" : "false"
+    "materialize.cloud/scratch-fs"           = var.enable_disk_setup ? "true" : "false"
     "workload"                               = "materialize-instance"
     "materialize.cloud/disk-config-required" = var.enable_disk_setup ? "true" : "false"
   }
