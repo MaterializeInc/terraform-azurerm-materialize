@@ -29,6 +29,7 @@ provider "registry.terraform.io/hashicorp/azuread" {
   version     = "3.6.0"
   constraints = ">= 2.45.0"
   hashes = [
+    "h1:BP11/mVROGs5MmskeiR4iCq7RpOdOGpDhi3JKnsLpHg=",
     "h1:yNzygmZOkJHxBY/eAmVL83UgrGp0tvhm7vUyspfHAdE=",
     "zh:1c3e89cf19118fc07d7b04257251fc9897e722c16e0a0df7b07fcd261f8c12e7",
     "zh:292f0775628d3f783da2f4ac12c22755a6caf645bb15bf4a98f8ee90ecc119a1",
@@ -50,6 +51,7 @@ provider "registry.terraform.io/hashicorp/azurerm" {
   constraints = ">= 3.75.0"
   hashes = [
     "h1:vYuNFnIf83/oCbyNqnxCjkWZNjVvxkDaoXyHiEb4PGU=",
+    "h1:zm2BYUh7pt651zH8zU2Gaf4/ZYzFhwsHWyyz7zGj75w=",
     "zh:07ade226563e3f1ba32d494847ab9f533b3dae8374fba7ef74cf327687e06d49",
     "zh:0c3a44c2e7ae7c1c747ce7f72a4a1a1791a289d0e58a050b3aef340b5a691a37",
     "zh:1fb4a2484af5a712a3385ea0adddb43b34099b4b7b4c4c9a9657e21fb2d30096",
@@ -157,6 +159,7 @@ provider "registry.terraform.io/isometry/deepmerge" {
   constraints = "~> 1.0"
   hashes = [
     "h1:cz245e3V3rCGuTzUKKH3PaCqfVdoZkm2AQtc7Bqjq6E=",
+    "h1:zET81Lj0Qa5oLysmYgS2RW378M/hHBqyFuOLs2dUlhw=",
     "zh:159857ca239c8051b02aac924430d2a24024cb65e91ca7ca0321e649ec932df5",
     "zh:19901774faebcb7268b216b6326c07af7d157b56b276f088cf97b04b36502f1c",
     "zh:32cf3c02b586ab43d9713250923f62a1ab28e93c8e44401098298cab9419183b",
