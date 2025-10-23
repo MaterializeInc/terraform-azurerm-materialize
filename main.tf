@@ -221,7 +221,7 @@ locals {
 }
 
 module "operator" {
-  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.26"
+  source = "github.com/MaterializeInc/terraform-helm-materialize?ref=v0.1.27"
 
   count = var.install_materialize_operator ? 1 : 0
 
