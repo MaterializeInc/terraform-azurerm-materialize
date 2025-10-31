@@ -11,6 +11,7 @@ prefix = "mz-dev"
 #     create_database                   = true
 #     authenticator_kind                = "Password"
 #     external_login_password_mz_system = random_password.analytics_mz_system.result
+#     license_key                       = "[...]"
 #   },
 #   {
 #     name                    = "demo"
@@ -19,5 +20,6 @@ prefix = "mz-dev"
 #     cpu_request             = "1"
 #     memory_request          = "1Gi"
 #     memory_limit            = "1Gi"
+#     license_key             = "[...]"
 #   }
 # ]
