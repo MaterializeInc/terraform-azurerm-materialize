@@ -188,6 +188,7 @@ No providers.
 | <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking | n/a |
 | <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.31 |
 | <a name="module_storage"></a> [storage](#module\_storage) | ./modules/storage | n/a |
+| <a name="module_swap_nodepool"></a> [swap\_nodepool](#module\_swap\_nodepool) | ./modules/nodepool | n/a |
 
 ## Resources
 
@@ -202,8 +203,8 @@ No resources.
 | <a name="input_cert_manager_install_timeout"></a> [cert\_manager\_install\_timeout](#input\_cert\_manager\_install\_timeout) | Timeout for installing the cert-manager helm chart, in seconds. | `number` | `300` | no |
 | <a name="input_cert_manager_namespace"></a> [cert\_manager\_namespace](#input\_cert\_manager\_namespace) | The name of the namespace in which cert-manager is or will be installed. | `string` | `"cert-manager"` | no |
 | <a name="input_database_config"></a> [database\_config](#input\_database\_config) | Azure Database for PostgreSQL configuration | <pre>object({<br/>    sku_name         = optional(string, "GP_Standard_D2s_v3")<br/>    postgres_version = optional(string, "15")<br/>    password         = string<br/>    username         = optional(string, "materialize")<br/>    db_name          = optional(string, "materialize")<br/>  })</pre> | n/a | yes |
-| <a name="input_disk_setup_image"></a> [disk\_setup\_image](#input\_disk\_setup\_image) | Docker image for the disk setup script | `string` | `"materialize/ephemeral-storage-setup-image:v0.3.4"` | no |
-| <a name="input_disk_support_config"></a> [disk\_support\_config](#input\_disk\_support\_config) | Advanced configuration for disk support (only used when enable\_disk\_support = true) | <pre>object({<br/>    install_openebs       = optional(bool, true)<br/>    run_disk_setup_script = optional(bool, true)<br/>    create_storage_class  = optional(bool, true)<br/>    openebs_version       = optional(string, "4.2.0")<br/>    openebs_namespace     = optional(string, "openebs")<br/>    storage_class_name    = optional(string, "openebs-lvm-instance-store-ext4")<br/>  })</pre> | `{}` | no |
+| <a name="input_disk_setup_image"></a> [disk\_setup\_image](#input\_disk\_setup\_image) | Docker image for the disk setup script | `string` | `"materialize/ephemeral-storage-setup-image:v0.4.0"` | no |
+| <a name="input_disk_support_config"></a> [disk\_support\_config](#input\_disk\_support\_config) | Advanced configuration for disk support (only used when enable\_disk\_support = true) | <pre>object({<br/>    install_openebs       = optional(bool, true)<br/>    run_disk_setup_script = optional(bool, true)<br/>    create_storage_class  = optional(bool, true)<br/>    openebs_version       = optional(string, "4.3.3")<br/>    openebs_namespace     = optional(string, "openebs")<br/>    storage_class_name    = optional(string, "openebs-lvm-instance-store-ext4")<br/>  })</pre> | `{}` | no |
 | <a name="input_enable_disk_support"></a> [enable\_disk\_support](#input\_enable\_disk\_support) | Enable disk support for Materialize using OpenEBS and local SSDs. When enabled, this configures OpenEBS, runs the disk setup script, and creates appropriate storage classes. | `bool` | `true` | no |
 | <a name="input_helm_chart"></a> [helm\_chart](#input\_helm\_chart) | Chart name from repository or local path to chart. For local charts, set the path to the chart directory. | `string` | `"materialize-operator"` | no |
 | <a name="input_helm_values"></a> [helm\_values](#input\_helm\_values) | Additional Helm values to merge with defaults | `any` | `{}` | no |
@@ -218,6 +219,7 @@ No resources.
 | <a name="input_orchestratord_version"></a> [orchestratord\_version](#input\_orchestratord\_version) | Version of the Materialize orchestrator to install | `string` | `null` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to be used for resource names | `string` | `"materialize"` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of an existing resource group to use | `string` | n/a | yes |
+| <a name="input_swap_enabled"></a> [swap\_enabled](#input\_swap\_enabled) | Enable swap for Materialize. When enabled, this configures swap on a new nodepool, and adds it to the clusterd node selectors. | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_use_local_chart"></a> [use\_local\_chart](#input\_use\_local\_chart) | Whether to use a local chart instead of one from a repository | `bool` | `false` | no |
 | <a name="input_use_self_signed_cluster_issuer"></a> [use\_self\_signed\_cluster\_issuer](#input\_use\_self\_signed\_cluster\_issuer) | Whether to install and use a self-signed ClusterIssuer for TLS. To work around limitations in Terraform, this will be treated as `false` if no materialize instances are defined. | `bool` | `true` | no |

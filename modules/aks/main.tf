@@ -1,5 +1,6 @@
 locals {
-  nodepool_name = substr(replace(var.prefix, "-", ""), 0, 12)
+  nodepool_name   = substr(replace(var.prefix, "-", ""), 0, 12)
+  disk_setup_name = "disk-setup-scratchfs"
 }
 
 resource "azurerm_user_assigned_identity" "aks_identity" {
@@ -82,6 +83,12 @@ resource "azurerm_kubernetes_cluster_node_pool" "materialize" {
     "materialize.cloud/scratch-fs"           = var.enable_disk_setup ? "true" : "false"
     "workload"                               = "materialize-instance"
     "materialize.cloud/disk-config-required" = var.enable_disk_setup ? "true" : "false"
+  }
+
+  upgrade_settings {
+    max_surge                     = "10%"
+    drain_timeout_in_minutes      = 0
+    node_soak_duration_in_minutes = 0
   }
 
   # Taints can not be removed: https://github.com/Azure/AKS/issues/2934
@@ -182,7 +189,7 @@ resource "kubernetes_namespace" "disk_setup" {
   count = var.enable_disk_setup ? 1 : 0
 
   metadata {
-    name = "disk-setup"
+    name = local.disk_setup_name
     labels = {
       "app.kubernetes.io/managed-by" = "terraform"
       "app.kubernetes.io/part-of"    = "materialize"
@@ -198,26 +205,26 @@ resource "kubernetes_daemonset" "disk_setup" {
   count = var.enable_disk_setup ? 1 : 0
 
   metadata {
-    name      = "disk-setup"
+    name      = local.disk_setup_name
     namespace = kubernetes_namespace.disk_setup[0].metadata[0].name
     labels = {
       "app.kubernetes.io/managed-by" = "terraform"
       "app.kubernetes.io/part-of"    = "materialize"
-      "app"                          = "disk-setup"
+      "app"                          = local.disk_setup_name
     }
   }
 
   spec {
     selector {
       match_labels = {
-        app = "disk-setup"
+        app = local.disk_setup_name
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "disk-setup"
+          app = local.disk_setup_name
         }
       }
 
@@ -236,7 +243,7 @@ resource "kubernetes_daemonset" "disk_setup" {
             required_during_scheduling_ignored_during_execution {
               node_selector_term {
                 match_expressions {
-                  key      = "materialize.cloud/disk"
+                  key      = "materialize.cloud/scratch-fs"
                   operator = "In"
                   values   = ["true"]
                 }
@@ -346,7 +353,7 @@ resource "kubernetes_daemonset" "disk_setup" {
 resource "kubernetes_service_account" "disk_setup" {
   count = var.enable_disk_setup ? 1 : 0
   metadata {
-    name      = "disk-setup"
+    name      = local.disk_setup_name
     namespace = kubernetes_namespace.disk_setup[0].metadata[0].name
   }
 }
@@ -354,7 +361,7 @@ resource "kubernetes_service_account" "disk_setup" {
 resource "kubernetes_cluster_role" "disk_setup" {
   count = var.enable_disk_setup ? 1 : 0
   metadata {
-    name = "disk-setup"
+    name = local.disk_setup_name
   }
   rule {
     api_groups = [""]
@@ -366,7 +373,7 @@ resource "kubernetes_cluster_role" "disk_setup" {
 resource "kubernetes_cluster_role_binding" "disk_setup" {
   count = var.enable_disk_setup ? 1 : 0
   metadata {
-    name = "disk-setup"
+    name = local.disk_setup_name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"

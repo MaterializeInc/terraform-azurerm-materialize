@@ -91,6 +91,8 @@ module "materialize" {
 
   materialize_instances = var.materialize_instances
 
+  swap_enabled = var.swap_enabled
+
   database_config = {
     sku_name = "GP_Standard_D2s_v3"
     version  = "15"
@@ -186,6 +188,12 @@ variable "use_self_signed_cluster_issuer" {
   description = "Whether to install and use a self-signed ClusterIssuer for TLS. To work around limitations in Terraform, this will be treated as `false` if no materialize instances are defined."
   type        = bool
   default     = true
+}
+
+variable "swap_enabled" {
+  description = "Enable swap for Materialize. When enabled, this configures swap on a new nodepool, and adds it to the clusterd node selectors."
+  type        = bool
+  default     = false
 }
 
 # Output the Materialize instance details

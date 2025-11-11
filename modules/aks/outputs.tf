@@ -3,6 +3,11 @@ output "cluster_name" {
   value       = azurerm_kubernetes_cluster.aks.name
 }
 
+output "cluster_id" {
+  description = "The ID of the AKS cluster"
+  value       = azurerm_kubernetes_cluster.aks.id
+}
+
 output "cluster_endpoint" {
   description = "The endpoint of the AKS cluster"
   value       = azurerm_kubernetes_cluster.aks.kube_config[0].host

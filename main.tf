@@ -62,6 +62,31 @@ module "aks" {
   tags = local.common_labels
 }
 
+module "swap_nodepool" {
+  count      = var.swap_enabled ? 1 : 0
+  source     = "./modules/nodepool"
+  depends_on = [module.aks]
+
+  prefix     = "${var.prefix}-mz-swap"
+  cluster_id = module.aks.cluster_id
+  subnet_id  = module.networking.aks_subnet_id
+
+  vm_size      = var.aks_config.vm_size
+  disk_size_gb = var.aks_config.disk_size_gb
+
+  autoscaling_config = {
+    enabled   = true
+    min_nodes = var.aks_config.min_nodes
+    max_nodes = var.aks_config.max_nodes
+  }
+
+  swap_enabled     = true
+  disk_setup_image = var.disk_setup_image
+
+  labels = local.common_labels
+  tags   = local.common_labels
+}
+
 module "database" {
   source = "./modules/database"
 
@@ -123,7 +148,7 @@ locals {
         region = var.location
       }
       clusters = {
-        swap_enabled = false
+        swap_enabled = var.swap_enabled
       }
     }
     observability = {
@@ -227,6 +252,7 @@ module "operator" {
 
   depends_on = [
     module.aks,
+    module.swap_nodepool,
     module.database,
     module.storage,
     module.certificates,
