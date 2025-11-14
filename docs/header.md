@@ -137,7 +137,7 @@ disk_support_config = {
   run_disk_setup_script = true
   create_storage_class = true
 
-  openebs_version = "4.2.0"
+  openebs_version = "4.3.3"
   openebs_namespace = "openebs"
   storage_class_name = "openebs-lvm-instance-store-ext4"
 }

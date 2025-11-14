@@ -138,7 +138,7 @@ disk_support_config = {
   run_disk_setup_script = true
   create_storage_class = true
 
-  openebs_version = "4.2.0"
+  openebs_version = "4.3.3"
   openebs_namespace = "openebs"
   storage_class_name = "openebs-lvm-instance-store-ext4"
 }
@@ -273,7 +273,7 @@ More advanced TLS support using user-provided CAs or per-Materialize `Issuer`s a
 
 To use swap:
 1. Set `swap_enabled` to `true`.
-2. Ensure your `environmentd_version` is at least `v0.26.0`.
+2. Ensure your `environmentd_version` is at least `v26.0.0`.
 3. Update your `request_rollout` (and `force_rollout` if already at the correct `environmentd_version`).
 4. Run `terraform apply`.
 
