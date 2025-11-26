@@ -91,9 +91,9 @@ module "materialize" {
 
   materialize_instances = var.materialize_instances
 
-  system_node_pool_vm_size      = "Standard_E4pds_v6"
+  system_node_pool_vm_size      = "Standard_D2ps_v6"
   system_node_pool_disk_size_gb = 100
-  system_node_pool_min_nodes    = 1
+  system_node_pool_min_nodes    = 2
   system_node_pool_max_nodes    = 2
 
   materialize_node_pool_vm_size      = "Standard_E4pds_v6"
