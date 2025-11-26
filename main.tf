@@ -3,23 +3,6 @@ locals {
     managed_by = "terraform"
     module     = "materialize"
   })
-
-  # TODO we can't delete this until we're certain no one is using it
-  # Disk support configuration
-  disk_config = {
-    install_openebs           = var.enable_disk_support ? lookup(var.disk_support_config, "install_openebs", true) : false
-    run_disk_setup_script     = var.enable_disk_support ? lookup(var.disk_support_config, "run_disk_setup_script", true) : false
-    create_storage_class      = var.enable_disk_support ? lookup(var.disk_support_config, "create_storage_class", true) : false
-    openebs_version           = lookup(var.disk_support_config, "openebs_version", "4.3.3")
-    openebs_namespace         = lookup(var.disk_support_config, "openebs_namespace", "openebs")
-    storage_class_name        = lookup(var.disk_support_config, "storage_class_name", "openebs-lvm-instance-store-ext4")
-    storage_class_provisioner = "local.csi.openebs.io"
-    storage_class_parameters = {
-      storage  = "lvm"
-      fsType   = "ext4"
-      volgroup = "instance-store-vg"
-    }
-  }
 }
 
 module "networking" {
@@ -53,13 +36,6 @@ module "aks" {
   min_nodes    = var.system_node_pool_min_nodes
   max_nodes    = var.system_node_pool_max_nodes
 
-  # Disk support configuration
-  enable_disk_setup = local.disk_config.run_disk_setup_script
-  install_openebs   = local.disk_config.install_openebs
-  openebs_namespace = local.disk_config.openebs_namespace
-  openebs_version   = local.disk_config.openebs_version
-  disk_setup_image  = var.disk_setup_image
-
   tags = local.common_labels
 }
 
@@ -80,8 +56,7 @@ module "materialize_nodepool" {
     max_nodes = var.materialize_node_pool_max_nodes
   }
 
-  swap_enabled     = true
-  disk_setup_image = var.disk_setup_image
+  swap_enabled = true
 
   labels = local.common_labels
   tags   = local.common_labels
@@ -187,15 +162,6 @@ locals {
             kind = "ClusterIssuer"
           }
         }
-      }
-    } : {}
-    # TODO we can't delete this until we're certain no one is using it
-    storage = var.enable_disk_support ? {
-      storageClass = {
-        create      = local.disk_config.create_storage_class
-        name        = local.disk_config.storage_class_name
-        provisioner = local.disk_config.storage_class_provisioner
-        parameters  = local.disk_config.storage_class_parameters
       }
     } : {}
   }
