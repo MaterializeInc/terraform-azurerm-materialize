@@ -40,20 +40,52 @@ variable "network_config" {
   })
 }
 
-variable "aks_config" {
-  description = "AKS cluster configuration"
-  type = object({
-    vm_size      = string
-    disk_size_gb = number
-    min_nodes    = number
-    max_nodes    = number
-  })
-  default = {
-    vm_size      = "Standard_E4pds_v6"
-    disk_size_gb = 100
-    min_nodes    = 1
-    max_nodes    = 5
-  }
+variable "system_node_pool_vm_size" {
+  description = "VM size for system node pool"
+  type        = string
+  default     = "Standard_E4pds_v6"
+}
+
+variable "system_node_pool_disk_size_gb" {
+  description = "Disk size in GB for system node pool"
+  type        = number
+  default     = 100
+}
+
+variable "system_node_pool_min_nodes" {
+  description = "Minimum number of nodes in system node pool"
+  type        = number
+  default     = 1
+}
+
+variable "system_node_pool_max_nodes" {
+  description = "Maximum number of nodes in system node pool"
+  type        = number
+  default     = 4
+}
+
+variable "materialize_node_pool_vm_size" {
+  description = "VM size for Materialize node pool"
+  type        = string
+  default     = "Standard_E4pds_v6"
+}
+
+variable "materialize_node_pool_disk_size_gb" {
+  description = "Disk size in GB for Materialize node pool"
+  type        = number
+  default     = 100
+}
+
+variable "materialize_node_pool_min_nodes" {
+  description = "Minimum number of nodes in Materialize node pool"
+  type        = number
+  default     = 1
+}
+
+variable "materialize_node_pool_max_nodes" {
+  description = "Maximum number of nodes in Materialize node pool"
+  type        = number
+  default     = 4
 }
 
 variable "database_config" {
@@ -183,12 +215,6 @@ variable "enable_disk_support" {
   description = "Enable disk support for Materialize using OpenEBS and local SSDs. When enabled, this configures OpenEBS, runs the disk setup script, and creates appropriate storage classes."
   type        = bool
   default     = true
-}
-
-variable "swap_enabled" {
-  description = "Enable swap for Materialize. When enabled, this configures swap on a new nodepool, and adds it to the clusterd node selectors."
-  type        = bool
-  default     = false
 }
 
 variable "disk_support_config" {

@@ -4,6 +4,7 @@ locals {
     module     = "materialize"
   })
 
+  # TODO we can't delete this until we're certain no one is using it
   # Disk support configuration
   disk_config = {
     install_openebs           = var.enable_disk_support ? lookup(var.disk_support_config, "install_openebs", true) : false
@@ -47,10 +48,10 @@ module "aks" {
   subnet_id           = module.networking.aks_subnet_id
   service_cidr        = var.network_config.service_cidr
 
-  vm_size      = var.aks_config.vm_size
-  disk_size_gb = var.aks_config.disk_size_gb
-  min_nodes    = var.aks_config.min_nodes
-  max_nodes    = var.aks_config.max_nodes
+  vm_size      = var.system_node_pool_vm_size
+  disk_size_gb = var.system_node_pool_disk_size_gb
+  min_nodes    = var.system_node_pool_min_nodes
+  max_nodes    = var.system_node_pool_max_nodes
 
   # Disk support configuration
   enable_disk_setup = local.disk_config.run_disk_setup_script
@@ -62,8 +63,7 @@ module "aks" {
   tags = local.common_labels
 }
 
-module "swap_nodepool" {
-  count      = var.swap_enabled ? 1 : 0
+module "materialize_nodepool" {
   source     = "./modules/nodepool"
   depends_on = [module.aks]
 
@@ -71,13 +71,13 @@ module "swap_nodepool" {
   cluster_id = module.aks.cluster_id
   subnet_id  = module.networking.aks_subnet_id
 
-  vm_size      = var.aks_config.vm_size
-  disk_size_gb = var.aks_config.disk_size_gb
+  vm_size      = var.materialize_node_pool_vm_size
+  disk_size_gb = var.materialize_node_pool_disk_size_gb
 
   autoscaling_config = {
     enabled   = true
-    min_nodes = var.aks_config.min_nodes
-    max_nodes = var.aks_config.max_nodes
+    min_nodes = var.materialize_node_pool_min_nodes
+    max_nodes = var.materialize_node_pool_max_nodes
   }
 
   swap_enabled     = true
@@ -85,6 +85,11 @@ module "swap_nodepool" {
 
   labels = local.common_labels
   tags   = local.common_labels
+}
+
+moved {
+  from = module.swap_nodepool[0]
+  to   = module.materialize_nodepool
 }
 
 module "database" {
@@ -148,7 +153,7 @@ locals {
         region = var.location
       }
       clusters = {
-        swap_enabled = var.swap_enabled
+        swap_enabled = true
       }
     }
     observability = {
@@ -184,6 +189,7 @@ locals {
         }
       }
     } : {}
+    # TODO we can't delete this until we're certain no one is using it
     storage = var.enable_disk_support ? {
       storageClass = {
         create      = local.disk_config.create_storage_class
@@ -252,7 +258,7 @@ module "operator" {
 
   depends_on = [
     module.aks,
-    module.swap_nodepool,
+    module.materialize_nodepool,
     module.database,
     module.storage,
     module.certificates,

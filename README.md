@@ -91,58 +91,7 @@ This module requires an existing Azure Resource Group. You can either:
     resource_group_name = "your-existing-rg"
     ```
 
-## Disk Support for Materialize on Azure
-
-This module supports configuring disks for Materialize on Azure using **local NVMe SSDs** available in specific VM families, along with **OpenEBS** and LVM for volume management.
-
-### Recommended Azure VM Types with Local NVMe Disks
-
-Materialize benefits from fast ephemeral storage and recommends a **minimum 2:1 disk-to-RAM ratio**. The [Epdsv6-series](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/memory-optimized/epdsv6-series?tabs=sizebasic#sizes-in-series) virtual machines offer a balanced combination of **high memory, local NVMe storage**.
-
-#### Epdsv6-series
-
-| VM Size              | vCPUs | Memory  | Ephemeral Disk | Disk-to-RAM Ratio |
-| -------------------- | ----- | ------- | -------------- | ----------------- |
-| `Standard_E2pds_v6`  | 2     | 16 GiB  | 75 GiB         | ~4.7:1            |
-| `Standard_E4pds_v6`  | 4     | 32 GiB  | 150 GiB        | ~4.7:1            |
-| `Standard_E8pds_v6`  | 8     | 64 GiB  | 300 GiB        | ~4.7:1            |
-| `Standard_E16pds_v6` | 16    | 128 GiB | 600 GiB        | ~4.7:1            |
-| `Standard_E32pds_v6` | 32    | 256 GiB | 1,200 GiB      | ~4.7:1            |
-
-> [!NOTE]
-> These VM types provide **ephemeral local NVMe SSD disks**. Data is lost when the VM is stopped or deleted, so they should only be used for **temporary or performance-critical data** managed by Materialize.
-
-### Enabling Disk Support on Azure
-
-When `enable_disk_support` is set to `true`, the module:
-
-1. Uses a bootstrap container to identify and configure available NVMe disks
-1. Sets up **OpenEBS** with `lvm-localpv` to manage the ephemeral disks
-1. Creates a StorageClass for Materialize
-
-Example configuration:
-
-```hcl
-enable_disk_support = true
-
-aks_config = {
-  node_count   = 2
-  vm_size      = "Standard_E4pds_v6"
-  os_disk_size_gb = 100
-  min_nodes    = 2
-  max_nodes    = 4
-}
-
-disk_support_config = {
-  install_openebs = true
-  run_disk_setup_script = true
-  create_storage_class = true
-
-  openebs_version = "4.3.3"
-  openebs_namespace = "openebs"
-  storage_class_name = "openebs-lvm-instance-store-ext4"
-}
-```
+### Advanced Configuration
 
 ## `materialize_instances` variable
 
@@ -188,7 +137,7 @@ No providers.
 | <a name="module_networking"></a> [networking](#module\_networking) | ./modules/networking | n/a |
 | <a name="module_operator"></a> [operator](#module\_operator) | github.com/MaterializeInc/terraform-helm-materialize | v0.1.35 |
 | <a name="module_storage"></a> [storage](#module\_storage) | ./modules/storage | n/a |
-| <a name="module_swap_nodepool"></a> [swap\_nodepool](#module\_swap\_nodepool) | ./modules/nodepool | n/a |
+| <a name="module_materialize_nodepool"></a> [materialize\_nodepool](#module\_materialize\_nodepool) | ./modules/nodepool | n/a |
 
 ## Resources
 
@@ -198,7 +147,14 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_aks_config"></a> [aks\_config](#input\_aks\_config) | AKS cluster configuration | <pre>object({<br/>    vm_size      = string<br/>    disk_size_gb = number<br/>    min_nodes    = number<br/>    max_nodes    = number<br/>  })</pre> | <pre>{<br/>  "disk_size_gb": 100,<br/>  "max_nodes": 5,<br/>  "min_nodes": 1,<br/>  "vm_size": "Standard_E4pds_v6"<br/>}</pre> | no |
+| <a name="input_system_node_pool_vm_size"></a> [system\_node\_pool\_vm\_size](#input\_system\_node\_pool\_vm\_size) | VM size for system node pool | `string` | `"Standard_E4pds_v6"` | no |
+| <a name="input_system_node_pool_disk_size_gb"></a> [system\_node\_pool\_disk\_size\_gb](#input\_system\_node\_pool\_disk\_size\_gb) | Disk size in GB for system node pool | `number` | `100` | no |
+| <a name="input_system_node_pool_min_nodes"></a> [system\_node\_pool\_min\_nodes](#input\_system\_node\_pool\_min\_nodes) | Minimum number of nodes in system node pool | `number` | `1` | no |
+| <a name="input_system_node_pool_max_nodes"></a> [system\_node\_pool\_max\_nodes](#input\_system\_node\_pool\_max\_nodes) | Maximum number of nodes in system node pool | `number` | `4` | no |
+| <a name="input_materialize_node_pool_vm_size"></a> [materialize\_node\_pool\_vm\_size](#input\_materialize\_node\_pool\_vm\_size) | VM size for Materialize node pool | `string` | `"Standard_E4pds_v6"` | no |
+| <a name="input_materialize_node_pool_disk_size_gb"></a> [materialize\_node\_pool\_disk\_size\_gb](#input\_materialize\_node\_pool\_disk\_size\_gb) | Disk size in GB for Materialize node pool | `number` | `100` | no |
+| <a name="input_materialize_node_pool_min_nodes"></a> [materialize\_node\_pool\_min\_nodes](#input\_materialize\_node\_pool\_min\_nodes) | Minimum number of nodes in Materialize node pool | `number` | `1` | no |
+| <a name="input_materialize_node_pool_max_nodes"></a> [materialize\_node\_pool\_max\_nodes](#input\_materialize\_node\_pool\_max\_nodes) | Maximum number of nodes in Materialize node pool | `number` | `4` | no |
 | <a name="input_cert_manager_chart_version"></a> [cert\_manager\_chart\_version](#input\_cert\_manager\_chart\_version) | Version of the cert-manager helm chart to install. | `string` | `"v1.17.1"` | no |
 | <a name="input_cert_manager_install_timeout"></a> [cert\_manager\_install\_timeout](#input\_cert\_manager\_install\_timeout) | Timeout for installing the cert-manager helm chart, in seconds. | `number` | `300` | no |
 | <a name="input_cert_manager_namespace"></a> [cert\_manager\_namespace](#input\_cert\_manager\_namespace) | The name of the namespace in which cert-manager is or will be installed. | `string` | `"cert-manager"` | no |
@@ -219,7 +175,6 @@ No resources.
 | <a name="input_orchestratord_version"></a> [orchestratord\_version](#input\_orchestratord\_version) | Version of the Materialize orchestrator to install | `string` | `null` | no |
 | <a name="input_prefix"></a> [prefix](#input\_prefix) | Prefix to be used for resource names | `string` | `"materialize"` | no |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of an existing resource group to use | `string` | n/a | yes |
-| <a name="input_swap_enabled"></a> [swap\_enabled](#input\_swap\_enabled) | Enable swap for Materialize. When enabled, this configures swap on a new nodepool, and adds it to the clusterd node selectors. | `bool` | `false` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources | `map(string)` | `{}` | no |
 | <a name="input_use_local_chart"></a> [use\_local\_chart](#input\_use\_local\_chart) | Whether to use a local chart instead of one from a repository | `bool` | `false` | no |
 | <a name="input_use_self_signed_cluster_issuer"></a> [use\_self\_signed\_cluster\_issuer](#input\_use\_self\_signed\_cluster\_issuer) | Whether to install and use a self-signed ClusterIssuer for TLS. To work around limitations in Terraform, this will be treated as `false` if no materialize instances are defined. | `bool` | `true` | no |
@@ -268,6 +223,26 @@ TLS support is provided by using `cert-manager` and a self-signed `ClusterIssuer
 More advanced TLS support using user-provided CAs or per-Materialize `Issuer`s are out of scope for this Terraform module. Please refer to the [cert-manager documentation](https://cert-manager.io/docs/configuration/) for detailed guidance on more advanced usage.
 
 ## Upgrade Notes
+
+#### v0.7.0
+
+This is an intermediate version to handle some changes that must be applied in stages.
+It is recommended to upgrade to v0.8.x after upgrading to this version.
+
+Breaking changes:
+* Swap is enabled by default.
+* Support for lgalloc, our legacy spill to disk mechanism, is deprecated, and will be removed in the next version.
+* We now always use two node pools, one for system workloads and one for Materialize workloads.
+    * Variables for configuring these node pools have been renamed, so they may be configured separately.
+
+To avoid downtime when upgrading to future versions, you must perform a rollout at this version.
+1. Ensure your `environmentd_version` is at least `v26.0.0`.
+2. Update your `request_rollout` (and `force_rollout` if already at the correct `environmentd_version`).
+3. Run `terraform apply`.
+
+You must upgrade to at least v0.6.x before upgrading to v0.7.0 of this terraform code.
+
+It is strongly recommended to have enabled swap on v0.6.x before upgrading to v0.7.0 or higher.
 
 #### v0.6.1
 
