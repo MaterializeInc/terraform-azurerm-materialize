@@ -131,6 +131,11 @@ locals {
         swap_enabled = true
       }
     }
+    environmentd = {
+      nodeSelector = {
+        "materialize.cloud/swap" = "true"
+      }
+    }
     observability = {
       podMetrics = {
         enabled = true
