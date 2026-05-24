@@ -1,4 +1,7 @@
 <!-- BEGIN_TF_DOCS -->
+> [!NOTE]
+> A newer module is available at [materialize-terraform-self-managed](https://github.com/MaterializeInc/materialize-terraform-self-managed). It takes a more modular approach so you can pick the pieces you need. If you would like to move over, the [Azure migration example](https://github.com/MaterializeInc/materialize-terraform-self-managed/tree/main/azure/examples/migration) is a good starting point.
+
 # Materialize on Azure
 
 Terraform module for deploying Materialize on Azure with all required infrastructure components.
