@@ -51,6 +51,7 @@ provider "registry.terraform.io/hashicorp/azurerm" {
   version     = "4.79.0"
   constraints = ">= 3.75.0, ~> 4.0"
   hashes = [
+    "h1:gGRthc4CoxQrOMJubv456CQnyH0kcUvZ2BGK4J+mFL4=",
     "h1:mgRutn0OCM16E2jTEUpccDP4/UoEz050j2hXsuaVdBI=",
     "zh:0129b3fa33289d54f86f150377b19127f85787116b7cc53564fed77c2e2468be",
     "zh:131427cf40dd3fa4ec52af938b7ab0fd100bcacd75b7137c8e1ea5bf268c4638",
@@ -159,6 +160,7 @@ provider "registry.terraform.io/isometry/deepmerge" {
   version     = "1.3.0"
   constraints = "~> 1.0"
   hashes = [
+    "h1:1Ny4Sx37vrnlWBpOmTf9LiBmFRvcRwcPXhsgIb5A0BY=",
     "h1:4zQnBWXtz4dBuEdYZvtSBHLnZgTbp6sUjTmGTWR9jfI=",
     "zh:249ac8ff5aeba46480c84fc36f90fb74bdfe37c98a0cf9891dfb31511d303f59",
     "zh:36ec801db8d31466b860344ae607f47787e8db93df66c758de4ec47aa28ac844",
